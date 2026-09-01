@@ -1,0 +1,51 @@
+backend:
+  name: github
+  repo: prymetop/Portfolio
+  branch: main
+  # Replace with your deployed Worker URL from SETUP.md step 3
+  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+  auth_endpoint: auth
+
+# Images you upload in the CMS are stored here in the repo
+media_folder: "assets/projects"
+public_folder: "assets/projects"
+
+publish_mode: simple
+
+collections:
+  - name: "projects"
+    label: "Projects"
+    files:
+      - name: "projects"
+        label: "Projects List"
+        file: "projects.json"
+        fields:
+          - label: "Projects"
+            name: "projects"
+            widget: "list"
+            summary: "{{title}} — {{tag}}"
+            fields:
+              - { label: "ID (unique slug, no spaces)", name: "id", widget: "string" }
+              - label: "Section (which part of the site this shows on)"
+                name: "section"
+                widget: "select"
+                default: "work"
+                options:
+                  - { label: "Selected Work (illustrative case studies)", value: "work" }
+                  - { label: "Completed Projects (real, shipped work)", value: "shipped" }
+              - { label: "Published (uncheck to hide from live site)", name: "published", widget: "boolean", default: true }
+              - { label: "Order (lower shows first)", name: "order", widget: "number", default: 1 }
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Tag / category", name: "tag", widget: "string", hint: "e.g. TECHNICAL WRITING · WEB3" }
+              - { label: "Cover Image", name: "image", widget: "image", required: false }
+              - { label: "Short Blurb (shows on the card)", name: "blurb", widget: "text" }
+              - { label: "Tools Used", name: "tools", widget: "string" }
+              - { label: "Problem", name: "problem", widget: "text", required: false }
+              - { label: "Approach", name: "approach", widget: "text", required: false }
+              - { label: "What I Did", name: "whatIDid", widget: "text", required: false }
+              - { label: "Result", name: "result", widget: "text", required: false }
+              - label: "Full Case Study (long-form, optional)"
+                name: "content"
+                widget: "markdown"
+                required: false
+                hint: "Optional deep-dive content. Renders below the summary boxes if filled in."

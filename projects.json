@@ -1,0 +1,68 @@
+{
+  "projects": [
+    {
+      "id": "nodecast-docs",
+      "section": "work",
+      "published": true,
+      "order": 1,
+      "title": "NodeCast Docs",
+      "tag": "TECHNICAL WRITING · WEB3",
+      "image": "",
+      "blurb": "A full documentation rebuild for a blockchain data-indexing API whose existing docs were costing the team support hours every week.",
+      "tools": "Markdown / Docusaurus · Postman · API testing · Notion",
+      "problem": "Developers were abandoning integration halfway through — docs described endpoints but not the reasoning behind them.",
+      "approach": "Rebuilt the docs around real integration journeys instead of a flat endpoint list, with runnable examples for each step.",
+      "whatIDid": "Audited every endpoint, rewrote the reference docs, and added a quickstart tested against the live API.",
+      "result": "Fewer repeated support questions and a shorter path from signup to first successful API call.",
+      "content": ""
+    },
+    {
+      "id": "auralis-onboarding",
+      "section": "work",
+      "published": true,
+      "order": 2,
+      "title": "Auralis Onboarding",
+      "tag": "AI-ASSISTED DEV · DESIGN",
+      "image": "",
+      "blurb": "An AI-assisted rebuild of a SaaS product's onboarding flow, combining prototyping, copy, and interaction design in one pass.",
+      "tools": "React · AI-assisted coding workflow · Figma",
+      "problem": "New users dropped off in a five-step onboarding wizard with unclear copy and no sense of progress.",
+      "approach": "Prototyped three flow variants quickly using an AI-assisted build process, then tested them against real task completion.",
+      "whatIDid": "Rewrote onboarding copy, restructured the flow to three steps, and built the working prototype myself.",
+      "result": "A shorter, clearer flow the team shipped directly with minor engineering polish.",
+      "content": ""
+    },
+    {
+      "id": "glassframe-design-system",
+      "section": "work",
+      "published": true,
+      "order": 3,
+      "title": "Glassframe Design System",
+      "tag": "DESIGN · DOCUMENTATION",
+      "image": "",
+      "blurb": "A component library and its documentation, built together so the design system and the docs never drift apart.",
+      "tools": "Figma · Storybook · Markdown",
+      "problem": "Design and docs were maintained separately, so the documented components regularly didn't match what shipped.",
+      "approach": "Treated the component docs as part of the design deliverable, not an afterthought written later.",
+      "whatIDid": "Designed the core components and wrote usage guidelines for each one as it was finalized.",
+      "result": "One source of truth for design and engineering, reducing inconsistency between the two.",
+      "content": ""
+    },
+    {
+      "id": "mindpath",
+      "section": "shipped",
+      "published": true,
+      "order": 1,
+      "title": "MindPath",
+      "tag": "AI-ASSISTED DEVELOPMENT",
+      "image": "",
+      "blurb": "A Gemini-powered Telegram bot built with a humanized personality, vision support, and per-chat memory so conversations carry context over time.",
+      "tools": "Google Gemini API · Telegram Bot API · Render (hosting) · cron-job.org (uptime)",
+      "problem": "",
+      "approach": "",
+      "whatIDid": "",
+      "result": "",
+      "content": "Currently deployed and running."
+    }
+  ]
+}
