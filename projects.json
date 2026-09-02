@@ -7,7 +7,7 @@
       "order": 1,
       "title": "NodeCast Docs",
       "tag": "TECHNICAL WRITING · WEB3",
-      "image": "",
+      "image": "assets/projects/nodecast-docs-1788330068843.jpg",
       "blurb": "A full documentation rebuild for a blockchain data-indexing API whose existing docs were costing the team support hours every week.",
       "tools": "Markdown / Docusaurus · Postman · API testing · Notion",
       "problem": "Developers were abandoning integration halfway through — docs described endpoints but not the reasoning behind them.",
