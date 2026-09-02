@@ -2,8 +2,7 @@ backend:
   name: github
   repo: prymetop/Portfolio
   branch: main
-  # Replace with your deployed Worker URL from SETUP.md step 3
-  base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
+  base_url: https://pryme-cms-auth.oluwatimi2253.workers.dev
   auth_endpoint: auth
 
 # Images you upload in the CMS are stored here in the repo
