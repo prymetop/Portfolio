@@ -7,5 +7,69 @@
 </head>
 <body>
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+  <script>
+    CMS.registerPreviewStyle("/assets/cms-preview.css");
+
+    var ProjectsPreview = createClass({
+      render: function () {
+        var entry = this.props.entry;
+        var projects = entry.getIn(["data", "projects"]);
+        if (!projects || projects.size === 0) {
+          return h("p", { className: "cms-preview-empty" }, "No projects yet.");
+        }
+
+        var sorted = projects.toJS().slice().sort(function (a, b) {
+          return (a.order || 0) - (b.order || 0);
+        });
+
+        return h(
+          "div",
+          {},
+          sorted.map(function (p, i) {
+            var hasCase = p.problem || p.approach || p.whatIDid || p.result;
+            var contentHtml = p.content && p.content.trim()
+              ? { __html: marked.parse(p.content) }
+              : null;
+
+            return h(
+              "div",
+              { key: i, className: "cms-preview-project" + (p.published === false ? " is-hidden" : "") },
+              h(
+                "div",
+                { className: "cms-preview-top" },
+                h("h3", {}, p.title || "Untitled"),
+                h("span", { className: "cms-preview-tag" }, p.tag || "")
+              ),
+              h(
+                "div",
+                { className: "cms-preview-status" },
+                (p.published === false ? "Hidden from live site" : "Published") +
+                  " · Section: " + (p.section || "work")
+              ),
+              p.image ? h("img", { className: "cms-preview-img", src: p.image }) : null,
+              h("p", { className: "cms-preview-blurb" }, p.blurb || ""),
+              p.tools ? h("div", { className: "cms-preview-tools" }, "Tools: " + p.tools) : null,
+              hasCase
+                ? h(
+                    "div",
+                    { className: "cms-preview-case" },
+                    p.problem ? h("div", {}, h("h4", {}, "Problem"), h("p", {}, p.problem)) : null,
+                    p.approach ? h("div", {}, h("h4", {}, "Approach"), h("p", {}, p.approach)) : null,
+                    p.whatIDid ? h("div", {}, h("h4", {}, "What I Did"), h("p", {}, p.whatIDid)) : null,
+                    p.result ? h("div", {}, h("h4", {}, "Result"), h("p", {}, p.result)) : null
+                  )
+                : null,
+              contentHtml
+                ? h("div", { className: "cms-preview-content", dangerouslySetInnerHTML: contentHtml })
+                : null
+            );
+          })
+        );
+      },
+    });
+
+    CMS.registerPreviewTemplate("projects", ProjectsPreview);
+  </script>
 </body>
 </html>
