@@ -159,6 +159,9 @@
           <input type="file" id="f_image_file" accept="image/*" />
           <div class="hint" id="f_image_current"></div>
           <img id="f_image_preview" class="img-preview" />
+          <div style="margin-top:8px;">
+            <button type="button" class="btn btn-danger" id="removeImageBtn" style="display:none; font-size:0.78rem; padding:6px 12px;">Remove Image</button>
+          </div>
         </div>
 
         <div class="full">
@@ -335,6 +338,7 @@
     $('editorTitle').textContent = p ? 'Edit Project' : 'Add Project';
     $('deleteBtn').style.display = p ? 'inline-block' : 'none';
     state.imageFile = null;
+    state.imageRemoved = false;
 
     $('f_title').value = p ? p.title || '' : '';
     $('f_tag').value = p ? p.tag || '' : '';
@@ -353,6 +357,7 @@
     var preview = $('f_image_preview');
     if (p && p.image){ preview.src = '/' + p.image; preview.style.display = 'block'; }
     else { preview.style.display = 'none'; }
+    $('removeImageBtn').style.display = (p && p.image) ? 'inline-block' : 'none';
 
     $('dashboardView').style.display = 'none';
     $('editorView').style.display = 'block';
@@ -383,7 +388,7 @@
       order: parseInt($('f_order').value, 10) || 1,
       title: $('f_title').value.trim(),
       tag: $('f_tag').value.trim(),
-      image: existing ? existing.image || '' : '',
+      image: existing ? (state.imageRemoved ? '' : (existing.image || '')) : '',
       blurb: $('f_blurb').value.trim(),
       tools: $('f_tools').value.trim(),
       problem: $('f_problem').value.trim(),
@@ -461,10 +466,18 @@
     $('f_image_file').addEventListener('change', function(){
       var f = this.files[0];
       if (f){
+        state.imageRemoved = false;
         var reader = new FileReader();
         reader.onload = function(){ $('f_image_preview').src = reader.result; $('f_image_preview').style.display = 'block'; };
         reader.readAsDataURL(f);
       }
+    });
+    $('removeImageBtn').addEventListener('click', function(){
+      state.imageRemoved = true;
+      $('f_image_file').value = '';
+      $('f_image_preview').style.display = 'none';
+      $('f_image_current').textContent = 'Image will be removed on save.';
+      this.style.display = 'none';
     });
 
     loadProjects().then(renderDashboard).catch(function(err){
