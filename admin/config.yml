@@ -5,6 +5,10 @@ backend:
   base_url: https://pryme-cms-auth.oluwatimi2253.workers.dev
   auth_endpoint: auth
 
+logo:
+  src: assets/cms-logo.svg
+  show_in_header: true
+
 # Images you upload in the CMS are stored here in the repo
 media_folder: "assets/projects"
 public_folder: "assets/projects"
