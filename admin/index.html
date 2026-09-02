@@ -1,75 +1,480 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pryme — Content Admin</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pryme — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A; --charcoal:#151515; --dgray:#202020;
+    --silver:#A7A7A7; --lsilver:#D0D0D0; --white:#F5F5F5;
+    --gold:#C9A227; --gold-dim:#8f7420; --rule: rgba(167,167,167,0.18);
+    --danger:#c94a2a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--black); color:var(--white); font-family:'Manrope',sans-serif; min-height:100vh;}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;}
+  ::selection{background:var(--gold); color:var(--black);}
+
+  /* ---- shell ---- */
+  #app{max-width:1000px; margin:0 auto; padding:40px 24px 100px;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:36px; padding-bottom:20px; border-bottom:1px solid var(--rule);}
+  .brand{display:flex; align-items:center; gap:12px; font-weight:700; font-size:1.1rem;}
+  .brand img{height:26px;}
+  .btn{
+    font-family:'Manrope',sans-serif; font-weight:600; font-size:0.88rem;
+    padding:10px 18px; border-radius:3px; border:1px solid var(--rule); cursor:pointer;
+    background:transparent; color:var(--white); transition:all .15s;
+  }
+  .btn:hover{border-color:var(--gold); color:var(--gold);}
+  .btn-primary{background:var(--gold); color:var(--black); border-color:var(--gold);}
+  .btn-primary:hover{background:#dfb62c; color:var(--black);}
+  .btn-danger{border-color:var(--danger); color:var(--danger);}
+  .btn-danger:hover{background:var(--danger); color:var(--white);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+
+  /* ---- login ---- */
+  #loginView{display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center; gap:22px;}
+  #loginView img{height:48px; margin-bottom:6px;}
+  #loginView p{color:var(--silver); max-width:360px;}
+
+  /* ---- toast ---- */
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--charcoal); border:1px solid var(--gold); color:var(--white);
+    padding:12px 22px; border-radius:4px; font-size:0.9rem; opacity:0; pointer-events:none;
+    transition:opacity .25s, transform .25s; z-index:100;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  #toast.error{border-color:var(--danger);}
+
+  /* ---- dashboard ---- */
+  .section-heading{display:flex; align-items:center; justify-content:space-between; margin:32px 0 16px;}
+  .section-heading h2{font-size:1.1rem; color:var(--silver); font-weight:600; text-transform:uppercase; letter-spacing:0.04em;}
+  .card-grid{display:flex; flex-direction:column; gap:12px;}
+  .p-card{
+    background:var(--charcoal); border:1px solid var(--rule); border-radius:4px;
+    padding:18px 20px; display:flex; align-items:center; gap:16px; transition:border-color .15s;
+  }
+  .p-card:hover{border-color:var(--gold-dim);}
+  .p-card img{width:52px; height:52px; object-fit:cover; border-radius:3px; background:var(--dgray); flex-shrink:0;}
+  .p-card .noimg{width:52px; height:52px; border-radius:3px; background:var(--dgray); flex-shrink:0;}
+  .p-card .info{flex:1; min-width:0;}
+  .p-card h3{font-size:1rem; margin-bottom:3px;}
+  .p-card .meta{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--silver);}
+  .p-card .meta .hidden-tag{color:var(--danger);}
+  .p-card .actions{display:flex; gap:8px; flex-shrink:0;}
+  .empty-note{color:var(--silver); font-size:0.9rem; padding:20px 0;}
+
+  /* ---- editor form ---- */
+  #editorView{display:none;}
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .form-grid .full{grid-column:1/-1;}
+  label{display:block; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;}
+  .hint{color:var(--silver); font-size:0.78rem; margin-top:5px;}
+  input[type=text], input[type=number], textarea, select{
+    width:100%; background:var(--charcoal); border:1px solid var(--rule); color:var(--white);
+    padding:11px 12px; border-radius:3px; font-family:'Manrope',sans-serif; font-size:0.92rem;
+  }
+  input:focus, textarea:focus, select:focus{outline:none; border-color:var(--gold);}
+  textarea{min-height:80px; resize:vertical;}
+  textarea.tall{min-height:160px;}
+  .checkbox-row{display:flex; align-items:center; gap:10px; margin-top:6px;}
+  .checkbox-row input{width:auto;}
+  .checkbox-row label{margin:0; text-transform:none; font-family:'Manrope',sans-serif; color:var(--white); font-size:0.9rem;}
+  .img-preview{width:100%; max-width:220px; border-radius:3px; margin-top:10px; display:none;}
+  .form-actions{display:flex; gap:12px; margin-top:30px; padding-top:24px; border-top:1px solid var(--rule);}
+  .editor-title{margin-bottom:6px;}
+  .editor-sub{color:var(--silver); font-size:0.88rem; margin-bottom:28px;}
+  fieldset{border:none; margin:28px 0 0; padding:0;}
+  legend{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--rule); width:100%;}
+
+  @media (max-width:640px){ .form-grid{grid-template-columns:1fr;} }
+</style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
-  <script>
-    CMS.registerPreviewStyle("/assets/cms-preview.css");
 
-    var ProjectsPreview = createClass({
-      render: function () {
-        var entry = this.props.entry;
-        var projects = entry.getIn(["data", "projects"]);
-        if (!projects || projects.size === 0) {
-          return h("p", { className: "cms-preview-empty" }, "No projects yet.");
-        }
+<div id="app">
 
-        var sorted = projects.toJS().slice().sort(function (a, b) {
-          return (a.order || 0) - (b.order || 0);
-        });
+  <div id="loginView">
+    <img src="/assets/cms-logo.svg" alt="Pryme" />
+    <h1 style="font-size:1.3rem;">Admin Dashboard</h1>
+    <p>Log in with the GitHub account connected to this site to add, edit, or remove projects.</p>
+    <button class="btn btn-primary" id="loginBtn">Log in with GitHub</button>
+  </div>
 
-        return h(
-          "div",
-          {},
-          sorted.map(function (p, i) {
-            var hasCase = p.problem || p.approach || p.whatIDid || p.result;
-            var contentHtml = p.content && p.content.trim()
-              ? { __html: marked.parse(p.content) }
-              : null;
+  <div id="mainView" style="display:none;">
+    <div class="topbar">
+      <div class="brand"><img src="/assets/cms-logo.svg" alt="Pryme" /></div>
+      <div style="display:flex; gap:10px;">
+        <a href="/" class="btn" target="_blank">View live site</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </div>
+    </div>
 
-            return h(
-              "div",
-              { key: i, className: "cms-preview-project" + (p.published === false ? " is-hidden" : "") },
-              h(
-                "div",
-                { className: "cms-preview-top" },
-                h("h3", {}, p.title || "Untitled"),
-                h("span", { className: "cms-preview-tag" }, p.tag || "")
-              ),
-              h(
-                "div",
-                { className: "cms-preview-status" },
-                (p.published === false ? "Hidden from live site" : "Published") +
-                  " · Section: " + (p.section || "work")
-              ),
-              p.image ? h("img", { className: "cms-preview-img", src: p.image }) : null,
-              h("p", { className: "cms-preview-blurb" }, p.blurb || ""),
-              p.tools ? h("div", { className: "cms-preview-tools" }, "Tools: " + p.tools) : null,
-              hasCase
-                ? h(
-                    "div",
-                    { className: "cms-preview-case" },
-                    p.problem ? h("div", {}, h("h4", {}, "Problem"), h("p", {}, p.problem)) : null,
-                    p.approach ? h("div", {}, h("h4", {}, "Approach"), h("p", {}, p.approach)) : null,
-                    p.whatIDid ? h("div", {}, h("h4", {}, "What I Did"), h("p", {}, p.whatIDid)) : null,
-                    p.result ? h("div", {}, h("h4", {}, "Result"), h("p", {}, p.result)) : null
-                  )
-                : null,
-              contentHtml
-                ? h("div", { className: "cms-preview-content", dangerouslySetInnerHTML: contentHtml })
-                : null
-            );
-          })
-        );
-      },
+    <div id="dashboardView">
+      <div class="section-heading">
+        <h2>All Projects</h2>
+        <button class="btn btn-primary" id="addBtn">+ Add New Project</button>
+      </div>
+      <div id="cardGrid" class="card-grid"></div>
+    </div>
+
+    <div id="editorView">
+      <h2 class="editor-title" id="editorTitle">Add Project</h2>
+      <p class="editor-sub">Fields marked with a gold label are shown on the live site card.</p>
+
+      <div class="form-grid">
+        <div>
+          <label>Title</label>
+          <input type="text" id="f_title" placeholder="Project name" />
+        </div>
+        <div>
+          <label>Tag / Category</label>
+          <input type="text" id="f_tag" placeholder="e.g. TECHNICAL WRITING · WEB3" />
+        </div>
+
+        <div>
+          <label>Section</label>
+          <select id="f_section">
+            <option value="work">Selected Work (illustrative case studies)</option>
+            <option value="shipped">Completed Projects (real, shipped work)</option>
+          </select>
+        </div>
+        <div>
+          <label>Order (lower shows first)</label>
+          <input type="number" id="f_order" value="1" />
+        </div>
+
+        <div class="full checkbox-row">
+          <input type="checkbox" id="f_published" checked />
+          <label for="f_published">Published (visible on live site)</label>
+        </div>
+
+        <div class="full">
+          <label>Cover Image</label>
+          <input type="file" id="f_image_file" accept="image/*" />
+          <div class="hint" id="f_image_current"></div>
+          <img id="f_image_preview" class="img-preview" />
+        </div>
+
+        <div class="full">
+          <label>Short Blurb</label>
+          <textarea id="f_blurb" placeholder="One or two sentences shown on the card"></textarea>
+        </div>
+
+        <div class="full">
+          <label>Tools Used</label>
+          <input type="text" id="f_tools" placeholder="e.g. Figma · React · Notion" />
+        </div>
+      </div>
+
+      <fieldset>
+        <legend>Case Study Summary (optional)</legend>
+        <div class="form-grid">
+          <div><label>Problem</label><textarea id="f_problem"></textarea></div>
+          <div><label>Approach</label><textarea id="f_approach"></textarea></div>
+          <div><label>What I Did</label><textarea id="f_whatIDid"></textarea></div>
+          <div><label>Result</label><textarea id="f_result"></textarea></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Full Case Study (optional, Markdown supported)</legend>
+        <textarea id="f_content" class="tall" placeholder="## Heading&#10;&#10;Write the long-form case study here. Markdown is supported."></textarea>
+      </fieldset>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" id="saveBtn">Save &amp; Publish</button>
+        <button class="btn" id="cancelBtn">Cancel</button>
+        <button class="btn btn-danger" id="deleteBtn" style="margin-left:auto; display:none;">Delete Project</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  // ---- config ----
+  var WORKER_URL = "https://pryme-cms-auth.oluwatimi2253.workers.dev";
+  var REPO = "prymetop/Portfolio";
+  var BRANCH = "main";
+  var FILE_PATH = "projects.json";
+
+  // ---- state ----
+  var state = { token: null, projects: [], sha: null, editingId: null, imageFile: null };
+
+  // ---- utils ----
+  function $(id){ return document.getElementById(id); }
+  function toast(msg, isError){
+    var t = $('toast');
+    t.textContent = msg;
+    t.className = isError ? 'show error' : 'show';
+    setTimeout(function(){ t.className = ''; }, 3200);
+  }
+  function b64EncodeUnicode(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  function b64DecodeUnicode(str){
+    return decodeURIComponent(escape(atob(str)));
+  }
+  function slugify(s){
+    return (s || 'project').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  // ---- auth ----
+  function getReturnUrl(){
+    return location.origin + location.pathname;
+  }
+  function login(){
+    location.href = WORKER_URL + "/auth?redirect_uri=" + encodeURIComponent(getReturnUrl());
+  }
+  function logout(){
+    sessionStorage.removeItem('pryme_admin_token');
+    location.reload();
+  }
+  function checkAuth(){
+    if (location.hash.indexOf('access_token=') > -1) {
+      var token = location.hash.split('access_token=')[1].split('&')[0];
+      sessionStorage.setItem('pryme_admin_token', token);
+      history.replaceState(null, '', location.pathname);
+    }
+    return sessionStorage.getItem('pryme_admin_token');
+  }
+
+  // ---- GitHub API ----
+  function ghHeaders(){
+    return {
+      'Authorization': 'token ' + state.token,
+      'Accept': 'application/vnd.github+json'
+    };
+  }
+  function ghGetFile(path){
+    return fetch('https://api.github.com/repos/' + REPO + '/contents/' + path + '?ref=' + BRANCH, {
+      headers: ghHeaders()
+    }).then(function(r){
+      if (!r.ok) throw new Error('GitHub GET failed: ' + r.status);
+      return r.json();
+    });
+  }
+  function ghPutFile(path, base64Content, message, sha){
+    var body = { message: message, content: base64Content, branch: BRANCH };
+    if (sha) body.sha = sha;
+    return fetch('https://api.github.com/repos/' + REPO + '/contents/' + path, {
+      method: 'PUT',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, ghHeaders()),
+      body: JSON.stringify(body)
+    }).then(function(r){
+      if (!r.ok) return r.json().then(function(e){ throw new Error(e.message || 'GitHub PUT failed'); });
+      return r.json();
+    });
+  }
+  function ghDeleteFile(path, message, sha){
+    return fetch('https://api.github.com/repos/' + REPO + '/contents/' + path, {
+      method: 'DELETE',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, ghHeaders()),
+      body: JSON.stringify({ message: message, sha: sha, branch: BRANCH })
+    });
+  }
+
+  // ---- data ----
+  function loadProjects(){
+    return ghGetFile(FILE_PATH).then(function(res){
+      var content = b64DecodeUnicode(res.content.replace(/\n/g, ''));
+      var data = JSON.parse(content);
+      state.projects = data.projects || [];
+      state.sha = res.sha;
+    });
+  }
+  function saveProjectsFile(commitMessage){
+    var json = JSON.stringify({ projects: state.projects }, null, 2);
+    return ghPutFile(FILE_PATH, b64EncodeUnicode(json), commitMessage, state.sha)
+      .then(function(res){ state.sha = res.content.sha; });
+  }
+
+  // ---- rendering ----
+  function renderDashboard(){
+    $('dashboardView').style.display = 'block';
+    $('editorView').style.display = 'none';
+    var grid = $('cardGrid');
+    if (state.projects.length === 0){
+      grid.innerHTML = '<p class="empty-note">No projects yet. Click "Add New Project" to create one.</p>';
+      return;
+    }
+    var sorted = state.projects.slice().sort(function(a,b){ return (a.order||0) - (b.order||0); });
+    grid.innerHTML = sorted.map(function(p){
+      var img = p.image
+        ? '<img src="/' + p.image + '" onerror="this.style.display=\'none\'" />'
+        : '<div class="noimg"></div>';
+      var hidden = p.published === false ? ' · <span class="hidden-tag">HIDDEN</span>' : '';
+      return '<div class="p-card">' + img +
+        '<div class="info"><h3>' + escapeHtml(p.title || 'Untitled') + '</h3>' +
+        '<div class="meta">' + escapeHtml(p.section === 'shipped' ? 'Completed Projects' : 'Selected Work') + hidden + '</div></div>' +
+        '<div class="actions">' +
+          '<button class="btn" data-edit="' + p.id + '">Edit</button>' +
+        '</div></div>';
+    }).join('');
+
+    grid.querySelectorAll('[data-edit]').forEach(function(btn){
+      btn.addEventListener('click', function(){ openEditor(btn.getAttribute('data-edit')); });
+    });
+  }
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+  }
+
+  function openEditor(id){
+    state.editingId = id || null;
+    var p = id ? state.projects.find(function(x){ return x.id === id; }) : null;
+    $('editorTitle').textContent = p ? 'Edit Project' : 'Add Project';
+    $('deleteBtn').style.display = p ? 'inline-block' : 'none';
+    state.imageFile = null;
+
+    $('f_title').value = p ? p.title || '' : '';
+    $('f_tag').value = p ? p.tag || '' : '';
+    $('f_section').value = p ? p.section || 'work' : 'work';
+    $('f_order').value = p ? (p.order || 1) : (state.projects.length + 1);
+    $('f_published').checked = p ? p.published !== false : true;
+    $('f_blurb').value = p ? p.blurb || '' : '';
+    $('f_tools').value = p ? p.tools || '' : '';
+    $('f_problem').value = p ? p.problem || '' : '';
+    $('f_approach').value = p ? p.approach || '' : '';
+    $('f_whatIDid').value = p ? p.whatIDid || '' : '';
+    $('f_result').value = p ? p.result || '' : '';
+    $('f_content').value = p ? p.content || '' : '';
+    $('f_image_file').value = '';
+    $('f_image_current').textContent = p && p.image ? 'Current image: ' + p.image : 'No image set yet.';
+    var preview = $('f_image_preview');
+    if (p && p.image){ preview.src = '/' + p.image; preview.style.display = 'block'; }
+    else { preview.style.display = 'none'; }
+
+    $('dashboardView').style.display = 'none';
+    $('editorView').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+
+  function closeEditor(){
+    renderDashboard();
+  }
+
+  function readFileAsBase64(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(){ resolve(reader.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function saveCurrentProject(){
+    var id = state.editingId || slugify($('f_title').value) + '-' + Date.now().toString(36);
+    var existing = state.editingId ? state.projects.find(function(x){ return x.id === id; }) : null;
+
+    var project = {
+      id: id,
+      section: $('f_section').value,
+      published: $('f_published').checked,
+      order: parseInt($('f_order').value, 10) || 1,
+      title: $('f_title').value.trim(),
+      tag: $('f_tag').value.trim(),
+      image: existing ? existing.image || '' : '',
+      blurb: $('f_blurb').value.trim(),
+      tools: $('f_tools').value.trim(),
+      problem: $('f_problem').value.trim(),
+      approach: $('f_approach').value.trim(),
+      whatIDid: $('f_whatIDid').value.trim(),
+      result: $('f_result').value.trim(),
+      content: $('f_content').value.trim()
+    };
+
+    if (!project.title){ toast('Title is required.', true); return; }
+
+    $('saveBtn').disabled = true;
+    $('saveBtn').textContent = 'Saving…';
+
+    var imageFile = $('f_image_file').files[0];
+    var imageStep = imageFile
+      ? readFileAsBase64(imageFile).then(function(b64){
+          var ext = imageFile.name.split('.').pop();
+          var path = 'assets/projects/' + project.id + '-' + Date.now() + '.' + ext;
+          return ghPutFile(path, b64, 'Upload image for ' + project.title).then(function(){
+            project.image = path;
+          });
+        })
+      : Promise.resolve();
+
+    imageStep.then(function(){
+      var idx = state.projects.findIndex(function(x){ return x.id === id; });
+      if (idx > -1) state.projects[idx] = project;
+      else state.projects.push(project);
+
+      return saveProjectsFile((state.editingId ? 'Update' : 'Add') + ' project: ' + project.title);
+    }).then(function(){
+      toast('Saved and published — live in about a minute.');
+      state.editingId = null;
+      renderDashboard();
+    }).catch(function(err){
+      toast('Error: ' + err.message, true);
+    }).finally(function(){
+      $('saveBtn').disabled = false;
+      $('saveBtn').textContent = 'Save & Publish';
+    });
+  }
+
+  function deleteCurrentProject(){
+    if (!state.editingId) return;
+    if (!confirm('Delete this project? This cannot be undone.')) return;
+    state.projects = state.projects.filter(function(x){ return x.id !== state.editingId; });
+    saveProjectsFile('Delete project: ' + state.editingId).then(function(){
+      toast('Project deleted and published.');
+      state.editingId = null;
+      renderDashboard();
+    }).catch(function(err){
+      toast('Error: ' + err.message, true);
+    });
+  }
+
+  // ---- boot ----
+  function boot(){
+    var token = checkAuth();
+    if (!token){
+      $('loginView').style.display = 'flex';
+      $('mainView').style.display = 'none';
+      $('loginBtn').addEventListener('click', login);
+      return;
+    }
+    state.token = token;
+    $('loginView').style.display = 'none';
+    $('mainView').style.display = 'block';
+
+    $('logoutBtn').addEventListener('click', logout);
+    $('addBtn').addEventListener('click', function(){ openEditor(null); });
+    $('cancelBtn').addEventListener('click', closeEditor);
+    $('saveBtn').addEventListener('click', saveCurrentProject);
+    $('deleteBtn').addEventListener('click', deleteCurrentProject);
+    $('f_image_file').addEventListener('change', function(){
+      var f = this.files[0];
+      if (f){
+        var reader = new FileReader();
+        reader.onload = function(){ $('f_image_preview').src = reader.result; $('f_image_preview').style.display = 'block'; };
+        reader.readAsDataURL(f);
+      }
     });
 
-    CMS.registerPreviewTemplate("projects", ProjectsPreview);
-  </script>
+    loadProjects().then(renderDashboard).catch(function(err){
+      toast('Could not load projects: ' + err.message, true);
+    });
+  }
+
+  boot();
+})();
+</script>
+
 </body>
 </html>
