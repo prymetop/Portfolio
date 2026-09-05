@@ -453,6 +453,10 @@
           </div>
           <input type="text" name="subject" placeholder="Subject" />
           <textarea name="message" placeholder="Tell me about the project…" required></textarea>
+          <div class="checkbox-row" style="display:flex; align-items:flex-start; gap:8px; margin:4px 0;">
+            <input type="checkbox" id="agreeTerms" name="agreeTerms" required style="width:auto; margin-top:4px;" />
+            <label for="agreeTerms" style="font-size:0.82rem; color:var(--silver); text-transform:none; font-family:'Manrope',sans-serif;">I agree to the <a href="/terms.html" target="_blank" style="color:var(--gold);">Terms &amp; Conditions</a>.</label>
+          </div>
           <button class="submit-btn" type="submit">Send Message</button>
         </form>
       </div>
@@ -463,7 +467,7 @@
 <footer>
   <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; width:100%;">
     <span>© 2025 Pryme · Write. Build. Design.</span>
-    <span><a href="https://twitter.com/d_top_pryme" target="_blank" rel="noopener">@d_top_pryme</a> · <a href="https://www.linkedin.com/in/peace-adesupo-0733bb303" target="_blank" rel="noopener">LinkedIn</a></span>
+    <span><a href="https://twitter.com/d_top_pryme" target="_blank" rel="noopener">@d_top_pryme</a> · <a href="https://www.linkedin.com/in/peace-adesupo-0733bb303" target="_blank" rel="noopener">LinkedIn</a> · <a href="/terms.html">Terms &amp; Conditions</a></span>
   </div>
 </footer>
 
@@ -471,6 +475,10 @@
   <div class="notify-box">
     <h3 id="notifyModalTitle">Get notified</h3>
     <input type="email" id="notifyModalEmail" placeholder="you@example.com" />
+    <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:14px;">
+      <input type="checkbox" id="notifyAgreeTerms" style="width:auto; margin-top:3px;" />
+      <label for="notifyAgreeTerms" style="font-size:0.8rem; color:var(--silver);">I agree to the <a href="/terms.html" target="_blank" style="color:var(--gold);">Terms &amp; Conditions</a>.</label>
+    </div>
     <div class="notify-msg" id="notifyModalMsg"></div>
     <div class="notify-actions">
       <button class="btn btn-primary" id="notifyModalSubmit" onclick="submitNotify()">Notify Me</button>
@@ -639,6 +647,7 @@
   window.openNotifyModal = function(projectId, projectTitle){
     document.getElementById('notifyModalTitle').textContent = 'Get notified: ' + projectTitle;
     document.getElementById('notifyModalEmail').value = '';
+    document.getElementById('notifyAgreeTerms').checked = false;
     document.getElementById('notifyModalMsg').textContent = '';
     document.getElementById('notifyModal').dataset.projectId = projectId;
     document.getElementById('notifyModal').dataset.projectTitle = projectTitle;
@@ -653,6 +662,11 @@
     const msg = document.getElementById('notifyModalMsg');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
       msg.textContent = "That doesn't look like a valid email.";
+      msg.style.color = '#c94a2a';
+      return;
+    }
+    if (!document.getElementById('notifyAgreeTerms').checked){
+      msg.textContent = 'Please agree to the Terms & Conditions to continue.';
       msg.style.color = '#c94a2a';
       return;
     }
