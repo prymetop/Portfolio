@@ -200,6 +200,24 @@
   @media (max-width:920px){.skillcols{grid-template-columns:1fr 1fr;}}
   @media (max-width:560px){.skillcols{grid-template-columns:1fr;}}
 
+  /* ---- EBOOK TEASER ---- */
+  .ebook-card{border:1px solid var(--gold-dim); padding:36px 32px; background:linear-gradient(180deg, rgba(201,162,39,0.05), transparent); margin-bottom:20px;}
+  .ebook-card h3{font-size:1.2rem; margin-bottom:10px;}
+  .ebook-blurb{color:var(--lsilver); margin-bottom:22px; font-size:0.95rem;}
+  .ebook-points{display:grid; grid-template-columns:1fr 1fr; gap:20px 32px; margin-bottom:30px;}
+  .ebook-point{font-size:0.94rem; color:var(--lsilver); line-height:1.55;}
+  .ebook-num{font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:600; margin-right:8px;}
+  @media (max-width:700px){.ebook-points{grid-template-columns:1fr;}}
+
+  /* ---- NOTIFY MODAL ---- */
+  #notifyModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:200; padding:20px;}
+  .notify-box{background:var(--charcoal); border:1px solid var(--gold-dim); padding:32px; max-width:400px; width:100%; border-radius:3px;}
+  .notify-box h3{font-size:1.15rem; margin-bottom:16px;}
+  .notify-box input{width:100%; background:var(--black); border:1px solid var(--rule); color:var(--white); padding:12px; border-radius:2px; font-family:'Manrope',sans-serif; margin-bottom:14px;}
+  .notify-box input:focus{outline:none; border-color:var(--gold);}
+  .notify-msg{font-size:0.85rem; min-height:18px; margin-bottom:14px;}
+  .notify-actions{display:flex; gap:10px;}
+
   /* ---- CONTACT ---- */
   .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px;}
   .contact-grid h2{font-size:clamp(1.7rem,3.6vw,2.4rem); font-weight:600; margin-bottom:18px;}
@@ -265,6 +283,7 @@
       <a href="#do" onclick="closeMenu()">What I Do</a>
       <a href="#about" onclick="closeMenu()">About</a>
       <a href="#skills" onclick="closeMenu()">Skills</a>
+      <a href="#ebook" onclick="closeMenu()">E-Book</a>
       <a href="#shipped" onclick="closeMenu()">Projects</a>
       <a href="#contact" onclick="closeMenu()">Contact</a>
     </div>
@@ -385,10 +404,23 @@
   </div>
 </section>
 
+<!-- E-BOOK TEASER -->
+<section id="ebook">
+  <div class="wrap reveal">
+    <div class="doc-label"><span class="num">05</span> Coming Soon</div>
+    <h2 class="section-title">What's next.</h2>
+    <p class="section-desc">Projects in active development — get notified the moment they launch.</p>
+
+    <div id="comingSoonList">
+      <p class="section-desc" style="margin-bottom:0;">Loading…</p>
+    </div>
+  </div>
+</section>
+
 <!-- REAL PROJECTS -->
 <section id="shipped">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">05</span> Completed Projects</div>
+    <div class="doc-label"><span class="num">06</span> Completed Projects</div>
     <h2 class="section-title">Shipped, not hypothetical.</h2>
     <p class="section-desc">Real work, actually built and deployed — separate from the illustrative case studies above.</p>
 
@@ -401,7 +433,7 @@
 <!-- CONTACT -->
 <section id="contact" style="border-bottom:none;">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">06</span> Contact</div>
+    <div class="doc-label"><span class="num">07</span> Contact</div>
     <div class="contact-grid">
       <div>
         <h2>Have something technical that needs to be explained?</h2>
@@ -434,6 +466,18 @@
     <span><a href="https://twitter.com/d_top_pryme" target="_blank" rel="noopener">@d_top_pryme</a> · <a href="https://www.linkedin.com/in/peace-adesupo-0733bb303" target="_blank" rel="noopener">LinkedIn</a></span>
   </div>
 </footer>
+
+<div id="notifyModal">
+  <div class="notify-box">
+    <h3 id="notifyModalTitle">Get notified</h3>
+    <input type="email" id="notifyModalEmail" placeholder="you@example.com" />
+    <div class="notify-msg" id="notifyModalMsg"></div>
+    <div class="notify-actions">
+      <button class="btn btn-primary" id="notifyModalSubmit" onclick="submitNotify()">Notify Me</button>
+      <button class="btn" onclick="closeNotifyModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const menuBtn = document.getElementById('menuBtn');
@@ -562,6 +606,74 @@
     .then(r => r.json())
     .then(data => renderAll(data.projects || []))
     .catch(() => renderAll(FALLBACK_PROJECTS.projects));
+
+  function comingSoonCardHtml(item){
+    const cover = item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" style="width:100%;border-radius:2px;margin-bottom:18px;display:block;">` : '';
+    const points = (item.points || []).map((p, i) =>
+      `<div class="ebook-point"><span class="ebook-num">0${i+1}</span> ${escapeHtml(p)}</div>`
+    ).join('');
+    return `
+    <div class="ebook-card">
+      <h3>${escapeHtml(item.title)}</h3>
+      ${cover}
+      <p class="ebook-blurb">${escapeHtml(item.blurb || '')}</p>
+      <div class="ebook-points">${points}</div>
+      <button class="btn btn-primary" onclick="openNotifyModal('${escapeHtml(item.id)}','${escapeHtml(item.title)}')">Get notified when it launches</button>
+    </div>`;
+  }
+
+  fetch('coming-soon.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      const visible = (data.items || []).filter(i => i.published !== false).sort((a,b) => (a.order||0)-(b.order||0));
+      document.getElementById('comingSoonList').innerHTML = visible.length
+        ? visible.map(comingSoonCardHtml).join('')
+        : '<p class="section-desc" style="margin-bottom:0;">Nothing announced yet — check back soon.</p>';
+    })
+    .catch(() => {
+      document.getElementById('comingSoonList').innerHTML = '<p class="section-desc" style="margin-bottom:0;">Could not load — check back soon.</p>';
+    });
+
+  const NOTIFY_WORKER_URL = "https://pryme-notify.oluwatimi2253.workers.dev";
+
+  window.openNotifyModal = function(projectId, projectTitle){
+    document.getElementById('notifyModalTitle').textContent = 'Get notified: ' + projectTitle;
+    document.getElementById('notifyModalEmail').value = '';
+    document.getElementById('notifyModalMsg').textContent = '';
+    document.getElementById('notifyModal').dataset.projectId = projectId;
+    document.getElementById('notifyModal').dataset.projectTitle = projectTitle;
+    document.getElementById('notifyModal').style.display = 'flex';
+  };
+  window.closeNotifyModal = function(){
+    document.getElementById('notifyModal').style.display = 'none';
+  };
+  window.submitNotify = function(){
+    const modal = document.getElementById('notifyModal');
+    const email = document.getElementById('notifyModalEmail').value.trim();
+    const msg = document.getElementById('notifyModalMsg');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      msg.textContent = "That doesn't look like a valid email.";
+      msg.style.color = '#c94a2a';
+      return;
+    }
+    const btn = document.getElementById('notifyModalSubmit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(NOTIFY_WORKER_URL + '/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, projectId: modal.dataset.projectId, projectTitle: modal.dataset.projectTitle })
+    }).then(r => r.json()).then(data => {
+      if (data.error){ throw new Error(data.error); }
+      msg.textContent = "You're on the list — check your inbox.";
+      msg.style.color = 'var(--gold)';
+      setTimeout(closeNotifyModal, 1800);
+    }).catch(() => {
+      msg.textContent = 'Something went wrong. Please try again shortly.';
+      msg.style.color = '#c94a2a';
+    }).finally(() => {
+      btn.disabled = false; btn.textContent = 'Notify Me';
+    });
+  };
 </script>
 
 </body>

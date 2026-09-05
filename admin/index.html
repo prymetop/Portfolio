@@ -115,12 +115,67 @@
       </div>
     </div>
 
+    <div style="display:flex; gap:10px; margin-bottom:24px;">
+      <button class="btn btn-primary" id="tabProjects">Projects</button>
+      <button class="btn" id="tabComingSoon">Coming Soon</button>
+    </div>
+
     <div id="dashboardView">
       <div class="section-heading">
         <h2>All Projects</h2>
         <button class="btn btn-primary" id="addBtn">+ Add New Project</button>
       </div>
       <div id="cardGrid" class="card-grid"></div>
+    </div>
+
+    <div id="csDashboardView" style="display:none;">
+      <div class="section-heading">
+        <h2>Coming Soon Items</h2>
+        <button class="btn btn-primary" id="csAddBtn">+ Add New Item</button>
+      </div>
+      <div id="csCardGrid" class="card-grid"></div>
+    </div>
+
+    <div id="csEditorView" style="display:none;">
+      <h2 class="editor-title" id="csEditorTitle">Add Coming Soon Item</h2>
+      <div class="form-grid">
+        <div class="full">
+          <label>Title</label>
+          <input type="text" id="cs_title" placeholder="Project or product name" />
+        </div>
+        <div>
+          <label>Order (lower shows first)</label>
+          <input type="number" id="cs_order" value="1" />
+        </div>
+        <div class="full checkbox-row">
+          <input type="checkbox" id="cs_published" checked />
+          <label for="cs_published">Published (visible on live site)</label>
+        </div>
+        <div class="full">
+          <label>Cover Image</label>
+          <input type="file" id="cs_image_file" accept="image/*" />
+          <div class="hint" id="cs_image_current"></div>
+          <img id="cs_image_preview" class="img-preview" />
+          <div style="margin-top:8px;">
+            <button type="button" class="btn btn-danger" id="csRemoveImageBtn" style="display:none; font-size:0.78rem; padding:6px 12px;">Remove Image</button>
+          </div>
+        </div>
+        <div class="full">
+          <label>Blurb</label>
+          <textarea id="cs_blurb" placeholder="One or two sentences describing what's coming"></textarea>
+        </div>
+        <div class="full">
+          <label>Highlight Points (one per line)</label>
+          <textarea id="cs_points" class="tall" placeholder="One selling point per line"></textarea>
+          <div class="hint">Each line becomes a separate numbered highlight on the card.</div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="csSaveBtn">Save &amp; Publish</button>
+        <button class="btn" id="csCancelBtn">Cancel</button>
+        <button class="btn" id="csNotifyBtn" style="display:none; border-color:var(--gold); color:var(--gold);">Notify Subscribers (it's live)</button>
+        <button class="btn btn-danger" id="csDeleteBtn" style="margin-left:auto; display:none;">Delete Item</button>
+      </div>
     </div>
 
     <div id="editorView">
@@ -206,6 +261,7 @@
 (function(){
   // ---- config ----
   var WORKER_URL = "https://pryme-cms-auth.oluwatimi2253.workers.dev";
+  var NOTIFY_WORKER_URL = "https://pryme-notify.oluwatimi2253.workers.dev";
   var REPO = "prymetop/Portfolio";
   var BRANCH = "main";
   var FILE_PATH = "projects.json";
@@ -446,6 +502,139 @@
   }
 
   // ---- boot ----
+  // ==== Coming Soon collection ====
+  var CS_FILE_PATH = "coming-soon.json";
+  var csState = { items: [], sha: null, editingId: null, imageFile: null, imageRemoved: false };
+
+  function csLoad(){
+    return ghGetFile(CS_FILE_PATH).then(function(res){
+      var content = b64DecodeUnicode(res.content.replace(/\n/g, ''));
+      var data = JSON.parse(content);
+      csState.items = data.items || [];
+      csState.sha = res.sha;
+    });
+  }
+  function csSaveFile(commitMessage){
+    var json = JSON.stringify({ items: csState.items }, null, 2);
+    return ghPutFile(CS_FILE_PATH, b64EncodeUnicode(json), commitMessage, csState.sha)
+      .then(function(res){ csState.sha = res.content.sha; });
+  }
+  function csRenderDashboard(){
+    $('csDashboardView').style.display = 'block';
+    $('csEditorView').style.display = 'none';
+    var grid = $('csCardGrid');
+    if (csState.items.length === 0){
+      grid.innerHTML = '<p class="empty-note">No coming soon items yet.</p>';
+      return;
+    }
+    var sorted = csState.items.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+    grid.innerHTML = sorted.map(function(p){
+      var img = p.image ? '<img src="/' + p.image + '" onerror="this.style.display=\'none\'" />' : '<div class="noimg"></div>';
+      var hidden = p.published === false ? ' · <span class="hidden-tag">HIDDEN</span>' : '';
+      return '<div class="p-card">' + img +
+        '<div class="info"><h3>' + escapeHtml(p.title || 'Untitled') + '</h3>' +
+        '<div class="meta">Coming Soon' + hidden + '</div></div>' +
+        '<div class="actions"><button class="btn" data-cs-edit="' + p.id + '">Edit</button></div></div>';
+    }).join('');
+    grid.querySelectorAll('[data-cs-edit]').forEach(function(btn){
+      btn.addEventListener('click', function(){ csOpenEditor(btn.getAttribute('data-cs-edit')); });
+    });
+  }
+  function csOpenEditor(id){
+    csState.editingId = id || null;
+    var p = id ? csState.items.find(function(x){ return x.id === id; }) : null;
+    $('csEditorTitle').textContent = p ? 'Edit Item' : 'Add Coming Soon Item';
+    $('csDeleteBtn').style.display = p ? 'inline-block' : 'none';
+    $('csNotifyBtn').style.display = p ? 'inline-block' : 'none';
+    csState.imageFile = null;
+    csState.imageRemoved = false;
+
+    $('cs_title').value = p ? p.title || '' : '';
+    $('cs_order').value = p ? (p.order || 1) : (csState.items.length + 1);
+    $('cs_published').checked = p ? p.published !== false : true;
+    $('cs_blurb').value = p ? p.blurb || '' : '';
+    $('cs_points').value = p && p.points ? p.points.join('\n') : '';
+    $('cs_image_file').value = '';
+    $('cs_image_current').textContent = p && p.image ? 'Current image: ' + p.image : 'No image set yet.';
+    var preview = $('cs_image_preview');
+    if (p && p.image){ preview.src = '/' + p.image; preview.style.display = 'block'; }
+    else { preview.style.display = 'none'; }
+    $('csRemoveImageBtn').style.display = (p && p.image) ? 'inline-block' : 'none';
+
+    $('csDashboardView').style.display = 'none';
+    $('csEditorView').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+  function csSaveCurrentItem(){
+    var id = csState.editingId || slugify($('cs_title').value) + '-' + Date.now().toString(36);
+    var existing = csState.editingId ? csState.items.find(function(x){ return x.id === id; }) : null;
+
+    var item = {
+      id: id,
+      published: $('cs_published').checked,
+      order: parseInt($('cs_order').value, 10) || 1,
+      title: $('cs_title').value.trim(),
+      blurb: $('cs_blurb').value.trim(),
+      points: $('cs_points').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean),
+      image: existing ? (csState.imageRemoved ? '' : (existing.image || '')) : ''
+    };
+    if (!item.title){ toast('Title is required.', true); return; }
+
+    $('csSaveBtn').disabled = true;
+    $('csSaveBtn').textContent = 'Saving…';
+
+    var imageFile = $('cs_image_file').files[0];
+    var imageStep = imageFile
+      ? readFileAsBase64(imageFile).then(function(b64){
+          var ext = imageFile.name.split('.').pop();
+          var path = 'assets/projects/coming-soon-' + item.id + '-' + Date.now() + '.' + ext;
+          return ghPutFile(path, b64, 'Upload image for ' + item.title).then(function(){ item.image = path; });
+        })
+      : Promise.resolve();
+
+    imageStep.then(function(){
+      var idx = csState.items.findIndex(function(x){ return x.id === id; });
+      if (idx > -1) csState.items[idx] = item; else csState.items.push(item);
+      return csSaveFile((csState.editingId ? 'Update' : 'Add') + ' coming soon item: ' + item.title);
+    }).then(function(){
+      toast('Saved and published — live in about a minute.');
+      csState.editingId = null;
+      csRenderDashboard();
+    }).catch(function(err){
+      toast('Error: ' + err.message, true);
+    }).finally(function(){
+      $('csSaveBtn').disabled = false;
+      $('csSaveBtn').textContent = 'Save & Publish';
+    });
+  }
+  function csDeleteCurrentItem(){
+    if (!csState.editingId) return;
+    if (!confirm('Delete this item? This cannot be undone.')) return;
+    csState.items = csState.items.filter(function(x){ return x.id !== csState.editingId; });
+    csSaveFile('Delete coming soon item: ' + csState.editingId).then(function(){
+      toast('Item deleted and published.');
+      csState.editingId = null;
+      csRenderDashboard();
+    }).catch(function(err){ toast('Error: ' + err.message, true); });
+  }
+
+  function showProjectsTab(){
+    $('tabProjects').className = 'btn btn-primary';
+    $('tabComingSoon').className = 'btn';
+    $('dashboardView').style.display = 'block';
+    $('csDashboardView').style.display = 'none';
+    $('csEditorView').style.display = 'none';
+    $('editorView').style.display = 'none';
+  }
+  function showComingSoonTab(){
+    $('tabComingSoon').className = 'btn btn-primary';
+    $('tabProjects').className = 'btn';
+    $('dashboardView').style.display = 'none';
+    $('editorView').style.display = 'none';
+    $('csEditorView').style.display = 'none';
+    $('csDashboardView').style.display = 'block';
+  }
+
   function boot(){
     var token = checkAuth();
     if (!token){
@@ -480,12 +669,59 @@
       this.style.display = 'none';
     });
 
+    $('tabProjects').addEventListener('click', showProjectsTab);
+    $('tabComingSoon').addEventListener('click', function(){
+      showComingSoonTab();
+      if (csState.sha === null){
+        csLoad().then(csRenderDashboard).catch(function(err){ toast('Could not load coming soon items: ' + err.message, true); });
+      }
+    });
+    $('csAddBtn').addEventListener('click', function(){ csOpenEditor(null); });
+    $('csCancelBtn').addEventListener('click', csRenderDashboard);
+    $('csSaveBtn').addEventListener('click', csSaveCurrentItem);
+    $('csDeleteBtn').addEventListener('click', csDeleteCurrentItem);
+    $('cs_image_file').addEventListener('change', function(){
+      var f = this.files[0];
+      if (f){
+        csState.imageRemoved = false;
+        var reader = new FileReader();
+        reader.onload = function(){ $('cs_image_preview').src = reader.result; $('cs_image_preview').style.display = 'block'; };
+        reader.readAsDataURL(f);
+      }
+    });
+    $('csRemoveImageBtn').addEventListener('click', function(){
+      csState.imageRemoved = true;
+      $('cs_image_file').value = '';
+      $('cs_image_preview').style.display = 'none';
+      $('cs_image_current').textContent = 'Image will be removed on save.';
+      this.style.display = 'none';
+    });
+    $('csNotifyBtn').addEventListener('click', function(){
+      var title = $('cs_title').value.trim();
+      if (!confirm('Send a "now live" email to everyone who signed up for "' + title + '"? This cannot be undone.')) return;
+      this.disabled = true; this.textContent = 'Sending…';
+      fetch(NOTIFY_WORKER_URL + '/notify-launch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + state.token },
+        body: JSON.stringify({ projectId: csState.editingId, projectTitle: title })
+      }).then(function(r){ return r.json(); }).then(function(data){
+        if (data.error) throw new Error(data.error);
+        toast('Notified ' + data.sent + ' subscriber(s)' + (data.failed ? (', ' + data.failed + ' failed') : '') + '.');
+      }).catch(function(err){
+        toast('Error: ' + err.message, true);
+      }).finally(function(){
+        $('csNotifyBtn').disabled = false;
+        $('csNotifyBtn').textContent = "Notify Subscribers (it's live)";
+      });
+    });
+
     loadProjects().then(renderDashboard).catch(function(err){
       toast('Could not load projects: ' + err.message, true);
     });
   }
 
   boot();
+
 })();
 </script>
 
