@@ -136,33 +136,34 @@
   .hero-portrait.hero-anim{animation-delay:.2s;}
   @keyframes heroIn{to{opacity:1; transform:translateY(0);}}
 
-  .hero-v2{position:relative; z-index:1;}
-  .hero-flank{display:flex; justify-content:space-between; margin-bottom:40px;}
-  .hero-flank-label{font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em;}
-  .hero-v2-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:50px; align-items:center;}
-  .hero-copy{max-width:520px;}
-  .hero-v2-name{font-size:clamp(2.4rem, 6vw, 4.4rem); font-weight:600; line-height:1.08; margin-bottom:22px;}
-  .hero-v2-name em{font-style:normal; color:var(--gold);}
-  .hero-arch{
-    position:relative; aspect-ratio:3/4; border-radius:50% 50% 4% 4% / 60% 60% 4% 4%;
-    overflow:hidden; background:var(--charcoal); max-width:400px; margin:0 auto;
+  .hero-grid{display:grid; grid-template-columns:1fr; position:relative; z-index:1;}
+  .hero-copy{max-width:640px;}
+
+  .hero-portrait-bleed{
+    position:absolute; top:0; right:0; height:100%; width:52%;
+    opacity:0; animation:portraitIn 1s ease forwards; animation-delay:.15s;
+    pointer-events:none;
+    -webkit-mask-image: linear-gradient(to left, black 40%, transparent 92%);
+    mask-image: linear-gradient(to left, black 40%, transparent 92%);
   }
-  .hero-arch::after{content:""; position:absolute; inset:0; background:var(--gold); mix-blend-mode:color; opacity:0.08;}
-  .hero-arch img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; filter:contrast(1.05);}
-  .hero-circle-cta{
-    display:inline-flex; align-items:center; gap:10px; margin-top:32px;
-    border:1px solid var(--gold); border-radius:999px; padding:14px 26px;
-    font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--gold);
-    transition:background .2s, color .2s;
+  .hero-portrait-bleed picture, .hero-portrait-bleed img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block;}
+  .hero-portrait-bleed::before{
+    content:""; position:absolute; inset:0; z-index:1;
+    background:linear-gradient(to top, var(--black) 0%, transparent 32%);
   }
-  .hero-circle-cta span{transition:transform .2s;}
-  .hero-circle-cta:hover{background:var(--gold); color:var(--black);}
-  .hero-circle-cta:hover span{transform:translateX(4px);}
+  .hero-portrait-bleed::after{
+    content:""; position:absolute; inset:0; z-index:1;
+    background:var(--gold); mix-blend-mode:color; opacity:0.08;
+  }
+  @keyframes portraitIn{from{opacity:0; transform:translateX(18px);} to{opacity:1; transform:translateX(0);}}
 
   @media (max-width:860px){
-    .hero-v2-grid{grid-template-columns:1fr; gap:34px;}
-    .hero-arch{order:-1; max-width:280px;}
-    .hero-flank{flex-direction:column; gap:6px; margin-bottom:28px;}
+    .hero-portrait-bleed{
+      position:relative; width:100%; height:340px; margin-bottom:34px; order:-1;
+      -webkit-mask-image:none; mask-image:none;
+    }
+    .hero-portrait-bleed::before{background:linear-gradient(to top, var(--black) 0%, transparent 40%);}
+    .hero-portrait-bleed img{object-position:top center;}
   }
 
   /* ---- SECTION SHELL ---- */
@@ -302,11 +303,24 @@
 </header>
 
 <!-- HERO -->
-<section class="hero" id="home" style="border-bottom:1px solid var(--rule); padding:80px 0 70px;">
-  <div class="wrap">
+<section class="hero" id="home" style="border-bottom:1px solid var(--rule);">
+  <div class="hero-portrait-bleed" aria-hidden="false">
+    <picture>
+      <source srcset="assets/pryme-hero.webp" type="image/webp">
+      <img src="assets/pryme-hero.jpg" alt="Portrait of Pryme">
+    </picture>
+  </div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
     <div class="eyebrow hero-anim"><span class="dot"></span> PRYME — TECHNICAL WRITER</div>
-    <h2 class="section-title hero-anim" style="max-width:760px;">Write. Build. Design. — the work behind that idea.</h2>
-    <p class="hero-sub hero-anim" style="max-width:600px; margin-top:16px;">Technical writing, AI-assisted development, and design — here's what I do, what I've built, and what's coming next.</p>
+    <h1 class="hero-anim">I write, build, and design technology <em>people can actually understand.</em></h1>
+    <p class="hero-sub hero-anim">Pryme turns complex technical ideas into clear documentation, working prototypes, and interfaces — for teams who need someone equally comfortable in the docs and the codebase.</p>
+    <div class="hero-roles hero-anim">Technical Writer <b>·</b> AI-Assisted Developer <b>·</b> Designer <b>·</b> Web3</div>
+    <div class="hero-ctas hero-anim">
+      <a href="#work" class="btn btn-primary">View My Work</a>
+      <a href="#contact" class="btn btn-outline">Let's Work Together</a>
+    </div>
+    </div>
   </div>
 </section>
 
