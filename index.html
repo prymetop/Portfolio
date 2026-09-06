@@ -37,6 +37,18 @@
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
+  .site-bg-parallax{
+    position:fixed; inset:0; z-index:-1;
+    background-image:url('assets/site-bg.jpg');
+    background-size:cover; background-position:center;
+    opacity:0.14; pointer-events:none;
+  }
+  @media (max-width:700px){
+    .site-bg-parallax{ opacity:0.10; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .site-bg-parallax{ position:absolute; }
+  }
   h1,h2,h3{font-family:'Space Grotesk',sans-serif; letter-spacing:-0.01em;}
   a{color:inherit; text-decoration:none;}
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -124,34 +136,33 @@
   .hero-portrait.hero-anim{animation-delay:.2s;}
   @keyframes heroIn{to{opacity:1; transform:translateY(0);}}
 
-  .hero-grid{display:grid; grid-template-columns:1fr; position:relative; z-index:1;}
-  .hero-copy{max-width:640px;}
-
-  .hero-portrait-bleed{
-    position:absolute; top:0; right:0; height:100%; width:52%;
-    opacity:0; animation:portraitIn 1s ease forwards; animation-delay:.15s;
-    pointer-events:none;
-    -webkit-mask-image: linear-gradient(to left, black 40%, transparent 92%);
-    mask-image: linear-gradient(to left, black 40%, transparent 92%);
+  .hero-v2{position:relative; z-index:1;}
+  .hero-flank{display:flex; justify-content:space-between; margin-bottom:40px;}
+  .hero-flank-label{font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em;}
+  .hero-v2-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:50px; align-items:center;}
+  .hero-copy{max-width:520px;}
+  .hero-v2-name{font-size:clamp(2.4rem, 6vw, 4.4rem); font-weight:600; line-height:1.08; margin-bottom:22px;}
+  .hero-v2-name em{font-style:normal; color:var(--gold);}
+  .hero-arch{
+    position:relative; aspect-ratio:3/4; border-radius:50% 50% 4% 4% / 60% 60% 4% 4%;
+    overflow:hidden; background:var(--charcoal); max-width:400px; margin:0 auto;
   }
-  .hero-portrait-bleed picture, .hero-portrait-bleed img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block;}
-  .hero-portrait-bleed::before{
-    content:""; position:absolute; inset:0; z-index:1;
-    background:linear-gradient(to top, var(--black) 0%, transparent 32%);
+  .hero-arch::after{content:""; position:absolute; inset:0; background:var(--gold); mix-blend-mode:color; opacity:0.08;}
+  .hero-arch img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; filter:contrast(1.05);}
+  .hero-circle-cta{
+    display:inline-flex; align-items:center; gap:10px; margin-top:32px;
+    border:1px solid var(--gold); border-radius:999px; padding:14px 26px;
+    font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--gold);
+    transition:background .2s, color .2s;
   }
-  .hero-portrait-bleed::after{
-    content:""; position:absolute; inset:0; z-index:1;
-    background:var(--gold); mix-blend-mode:color; opacity:0.08;
-  }
-  @keyframes portraitIn{from{opacity:0; transform:translateX(18px);} to{opacity:1; transform:translateX(0);}}
+  .hero-circle-cta span{transition:transform .2s;}
+  .hero-circle-cta:hover{background:var(--gold); color:var(--black);}
+  .hero-circle-cta:hover span{transform:translateX(4px);}
 
   @media (max-width:860px){
-    .hero-portrait-bleed{
-      position:relative; width:100%; height:340px; margin-bottom:34px; order:-1;
-      -webkit-mask-image:none; mask-image:none;
-    }
-    .hero-portrait-bleed::before{background:linear-gradient(to top, var(--black) 0%, transparent 40%);}
-    .hero-portrait-bleed img{object-position:top center;}
+    .hero-v2-grid{grid-template-columns:1fr; gap:34px;}
+    .hero-arch{order:-1; max-width:280px;}
+    .hero-flank{flex-direction:column; gap:6px; margin-bottom:28px;}
   }
 
   /* ---- SECTION SHELL ---- */
@@ -274,14 +285,12 @@
 </style>
 </head>
 <body>
+<div class="site-bg-parallax"></div>
 
 <header>
   <nav>
     <a href="#home" class="logo">PRY<span>ME</span></a>
     <div class="navlinks" id="navLinks">
-      <a href="#work" onclick="closeMenu()">Work</a>
-      <a href="#do" onclick="closeMenu()">What I Do</a>
-      <a href="#about" onclick="closeMenu()">About</a>
       <a href="#skills" onclick="closeMenu()">Skills</a>
       <a href="#ebook" onclick="closeMenu()">E-Book</a>
       <a href="#shipped" onclick="closeMenu()">Projects</a>
@@ -294,22 +303,23 @@
 
 <!-- HERO -->
 <section class="hero" id="home" style="border-bottom:1px solid var(--rule);">
-  <div class="hero-portrait-bleed" aria-hidden="false">
-    <picture>
-      <source srcset="assets/pryme-hero.webp" type="image/webp">
-      <img src="assets/pryme-hero.jpg" alt="Portrait of Pryme">
-    </picture>
-  </div>
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
-    <div class="eyebrow hero-anim"><span class="dot"></span> PRYME — TECHNICAL WRITER</div>
-    <h1 class="hero-anim">I write, build, and design technology <em>people can actually understand.</em></h1>
-    <p class="hero-sub hero-anim">Pryme turns complex technical ideas into clear documentation, working prototypes, and interfaces — for teams who need someone equally comfortable in the docs and the codebase.</p>
-    <div class="hero-roles hero-anim">Technical Writer <b>·</b> AI-Assisted Developer <b>·</b> Designer <b>·</b> Web3</div>
-    <div class="hero-ctas hero-anim">
-      <a href="#work" class="btn btn-primary">View My Work</a>
-      <a href="#contact" class="btn btn-outline">Let's Work Together</a>
+  <div class="wrap hero-v2">
+    <div class="hero-flank">
+      <span class="hero-flank-label hero-anim">Technical Writer</span>
+      <span class="hero-flank-label hero-anim">Web3 &amp; AI-Assisted Dev</span>
     </div>
+    <div class="hero-v2-grid">
+      <div class="hero-copy">
+        <h1 class="hero-v2-name hero-anim">Hello, I'm<br><em>Peace.</em></h1>
+        <p class="hero-sub hero-anim">Pryme turns complex technical ideas into clear documentation, working prototypes, and interfaces — for teams who need someone equally comfortable in the docs and the codebase.</p>
+        <a href="#contact" class="hero-circle-cta hero-anim">Contact Me <span>→</span></a>
+      </div>
+      <div class="hero-arch hero-anim">
+        <picture>
+          <source srcset="assets/pryme-hero.webp" type="image/webp">
+          <img src="assets/pryme-hero.jpg" alt="Portrait of Pryme">
+        </picture>
+      </div>
     </div>
   </div>
 </section>
@@ -317,7 +327,7 @@
 <!-- WHAT I DO -->
 <section id="do">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">01</span> What I Do</div>
+    <div class="doc-label">What I Do</div>
     <h2 class="section-title">Four disciplines. One way of thinking.</h2>
     <p class="section-desc">Writing is the foundation — AI-assisted development, design, and Web3 context are how the ideas get built and shipped.</p>
   </div>
@@ -350,7 +360,7 @@
 <!-- WORK -->
 <section id="work">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">02</span> Selected Work</div>
+    <div class="doc-label">Selected Work</div>
     <h2 class="section-title">Case studies, not screenshots.</h2>
     <p class="section-desc">A sample of representative projects across writing, development, and design. Details anonymized / illustrative.</p>
 
@@ -363,7 +373,7 @@
 <!-- ABOUT -->
 <section id="about">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">03</span> About</div>
+    <div class="doc-label">About</div>
     <h2 class="section-title">A technical writer who also builds.</h2>
     <div class="about-grid">
       <div>
@@ -381,7 +391,7 @@
 <!-- SKILLS -->
 <section id="skills">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">04</span> Skills</div>
+    <div class="doc-label">Skills</div>
     <h2 class="section-title">Toolkit</h2>
     <div class="skillcols">
       <div>
@@ -407,7 +417,20 @@
 <!-- E-BOOK TEASER -->
 <section id="ebook">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">05</span> Coming Soon</div>
+    <div class="doc-label">E-Book</div>
+    <h2 class="section-title">A Technical Writing E-Book, from the ground up.</h2>
+    <p class="section-desc">A structured guide taking you from "what is technical writing?" to professional-level practice.</p>
+
+    <div id="ebookOnlyList">
+      <p class="section-desc" style="margin-bottom:0;">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMING SOON (non-ebook items) -->
+<section id="coming-soon">
+  <div class="wrap reveal">
+    <div class="doc-label">Coming Soon</div>
     <h2 class="section-title">What's next.</h2>
     <p class="section-desc">Projects in active development — get notified the moment they launch.</p>
 
@@ -420,7 +443,7 @@
 <!-- REAL PROJECTS -->
 <section id="shipped">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">06</span> Completed Projects</div>
+    <div class="doc-label">Completed Projects</div>
     <h2 class="section-title">Shipped, not hypothetical.</h2>
     <p class="section-desc">Real work, actually built and deployed — separate from the illustrative case studies above.</p>
 
@@ -433,7 +456,7 @@
 <!-- CONTACT -->
 <section id="contact" style="border-bottom:none;">
   <div class="wrap reveal">
-    <div class="doc-label"><span class="num">07</span> Contact</div>
+    <div class="doc-label">Contact</div>
     <div class="contact-grid">
       <div>
         <h2>Have something technical that needs to be explained?</h2>
@@ -633,12 +656,20 @@
   fetch('coming-soon.json?_=' + Date.now())
     .then(r => r.json())
     .then(data => {
-      const visible = (data.items || []).filter(i => i.published !== false).sort((a,b) => (a.order||0)-(b.order||0));
-      document.getElementById('comingSoonList').innerHTML = visible.length
-        ? visible.map(comingSoonCardHtml).join('')
-        : '<p class="section-desc" style="margin-bottom:0;">Nothing announced yet — check back soon.</p>';
+      const all = (data.items || []).filter(i => i.published !== false).sort((a,b) => (a.order||0)-(b.order||0));
+      const ebookItems = all.filter(i => i.id === 'ebook');
+      const otherItems = all.filter(i => i.id !== 'ebook');
+
+      document.getElementById('ebookOnlyList').innerHTML = ebookItems.length
+        ? ebookItems.map(comingSoonCardHtml).join('')
+        : '<p class="section-desc" style="margin-bottom:0;">Details coming soon.</p>';
+
+      document.getElementById('comingSoonList').innerHTML = otherItems.length
+        ? otherItems.map(comingSoonCardHtml).join('')
+        : '<p class="section-desc" style="margin-bottom:0;">Nothing else announced yet — check back soon.</p>';
     })
     .catch(() => {
+      document.getElementById('ebookOnlyList').innerHTML = '<p class="section-desc" style="margin-bottom:0;">Could not load — check back soon.</p>';
       document.getElementById('comingSoonList').innerHTML = '<p class="section-desc" style="margin-bottom:0;">Could not load — check back soon.</p>';
     });
 
