@@ -537,7 +537,7 @@
   }
 
   function projectCardHtml(p){
-    const cover = p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)} cover" style="width:100%;border-radius:2px;margin-bottom:18px;display:block;">` : '';
+    const cover = p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)} cover" style="width:100%;max-height:260px;object-fit:cover;border-radius:2px;margin-bottom:18px;display:block;">` : '';
     const caseGrid = (p.problem || p.approach || p.whatIDid || p.result) ? `
       <div class="case">
         ${p.problem ? `<div><h4>Problem</h4><p>${escapeHtml(p.problem)}</p></div>` : ''}
@@ -639,7 +639,7 @@
     .catch(() => renderAll(FALLBACK_PROJECTS.projects));
 
   function comingSoonCardHtml(item){
-    const cover = item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" style="width:100%;border-radius:2px;margin-bottom:18px;display:block;">` : '';
+    const cover = item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" style="width:100%;max-height:260px;object-fit:cover;border-radius:2px;margin-bottom:18px;display:block;">` : '';
     const points = (item.points || []).map((p, i) =>
       `<div class="ebook-point"><span class="ebook-num">0${i+1}</span> ${escapeHtml(p)}</div>`
     ).join('');
