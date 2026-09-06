@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pryme — Technical Writer · AI-Assisted Developer · Designer</title>
+<meta name="description" content="Pryme writes, builds, and designs technology that people can actually understand and use. Technical writing, AI-assisted development, design, and Web3." />
+<meta property="og:title" content="Pryme — Write. Build. Design." />
+<meta property="og:description" content="Technical Writer · AI-Assisted Developer · Designer" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --charcoal:#151515;
+    --dgray:#202020;
+    --silver:#A7A7A7;
+    --lsilver:#D0D0D0;
+    --white:#F5F5F5;
+    --gold:#C9A227;
+    --gold-dim:#8f7420;
+    --rule: rgba(167,167,167,0.18);
+    --maxw: 1120px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Manrope',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .site-bg-parallax{
+    position:fixed; inset:0; z-index:-1;
+    background-image:url('assets/site-bg.jpg');
+    background-size:cover; background-position:center;
+    opacity:0.14; pointer-events:none;
+  }
+  @media (max-width:700px){
+    .site-bg-parallax{ opacity:0.10; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .site-bg-parallax{ position:absolute; }
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; letter-spacing:-0.01em;}
+  a{color:inherit; text-decoration:none;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  ::selection{background:var(--gold); color:var(--black);}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+
+  /* ---- doc-header device (signature element) ---- */
+  .doc-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--gold);
+    letter-spacing:0.02em;
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:14px;
+  }
+  .doc-label .num{color:var(--silver);}
+
+
+  /* ---- NAV ---- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,10,10,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);
+  }
+  nav{display:flex; align-items:center; justify-content:space-between; padding:18px 28px; max-width:var(--maxw); margin:0 auto;}
+  .logo{font-size:1.15rem; font-weight:700; letter-spacing:0.02em;}
+  .logo span{color:var(--gold);}
+  .navlinks{display:flex; gap:32px; font-size:0.92rem; color:var(--lsilver);}
+  .navlinks a{position:relative; transition:color .2s;}
+  .navlinks a::after{content:"";position:absolute; left:0; bottom:-4px; width:0; height:1px; background:var(--gold); transition:width .25s ease;}
+  .navlinks a:hover{color:var(--gold);}
+  .navlinks a:hover::after{width:100%;}
+  .navcta{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.8rem; border:1px solid var(--gold);
+    color:var(--gold); padding:8px 16px; border-radius:2px;
+    transition:background .2s, color .2s;
+  }
+  .navcta:hover{background:var(--gold); color:var(--black);}
+  .menu-btn{display:none; background:none; border:none; color:var(--white); font-size:1.5rem; cursor:pointer;}
+
+  @media (max-width:820px){
+    .navlinks{position:fixed; inset:64px 0 0 0; background:var(--black); flex-direction:column; padding:40px 28px; gap:26px; font-size:1.1rem; transform:translateX(100%); transition:transform .35s ease; z-index:40;}
+    .navlinks.open{transform:translateX(0);}
+    .menu-btn{display:block;}
+    .navcta{display:none;}
+  }
+
+  /* ---- HERO ---- */
+  .hero{padding:120px 0 90px; border-bottom:1px solid var(--rule); position:relative; overflow:hidden;}
+  .hero::after{
+    content:""; position:absolute; right:-10%; top:-20%; width:520px; height:520px;
+    background:radial-gradient(circle, rgba(201,162,39,0.10), transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--gold);
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--gold-dim); border-radius:999px; padding:7px 16px;
+    margin-bottom:26px; letter-spacing:0.03em;
+  }
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--gold); animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.4; transform:scale(0.7);}}
+  .hero h1{font-size:clamp(2.1rem, 5.4vw, 3.9rem); font-weight:600; line-height:1.12; max-width:800px;}
+  .hero h1 em{font-style:normal; color:var(--gold);}
+  .hero-sub{margin-top:22px; font-size:1.05rem; color:var(--lsilver); max-width:560px;}
+  .hero-roles{margin-top:20px; font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--silver);}
+  .hero-roles b{color:var(--white); font-weight:500;}
+  .hero-ctas{margin-top:38px; display:flex; gap:16px; flex-wrap:wrap;}
+  .btn{padding:13px 26px; border-radius:2px; font-size:0.92rem; font-weight:600; transition:transform .2s, background .2s, color .2s, border-color .2s, box-shadow .2s;}
+  .btn-primary{background:var(--gold); color:var(--black);}
+  .btn-primary:hover{background:var(--white); transform:translateY(-3px); box-shadow:0 10px 24px rgba(201,162,39,0.25);}
+  .btn-outline{border:1px solid var(--rule); color:var(--white);}
+  .btn-outline:hover{border-color:var(--gold); color:var(--gold); transform:translateY(-3px);}
+
+  /* hero entrance sequence */
+  .hero-anim{opacity:0; transform:translateY(18px); animation:heroIn .7s ease forwards;}
+  .eyebrow.hero-anim{animation-delay:.05s;}
+  .hero h1.hero-anim{animation-delay:.18s;}
+  .hero-sub.hero-anim{animation-delay:.32s;}
+  .hero-roles.hero-anim{animation-delay:.44s;}
+  .hero-ctas.hero-anim{animation-delay:.56s;}
+  .hero-portrait.hero-anim{animation-delay:.2s;}
+  @keyframes heroIn{to{opacity:1; transform:translateY(0);}}
+
+  .hero-v2{position:relative; z-index:1;}
+  .hero-flank{display:flex; justify-content:space-between; margin-bottom:40px;}
+  .hero-flank-label{font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em;}
+  .hero-v2-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:50px; align-items:center;}
+  .hero-copy{max-width:520px;}
+  .hero-v2-name{font-size:clamp(2.4rem, 6vw, 4.4rem); font-weight:600; line-height:1.08; margin-bottom:22px;}
+  .hero-v2-name em{font-style:normal; color:var(--gold);}
+  .hero-arch{
+    position:relative; aspect-ratio:3/4; border-radius:50% 50% 4% 4% / 60% 60% 4% 4%;
+    overflow:hidden; background:var(--charcoal); max-width:400px; margin:0 auto;
+  }
+  .hero-arch::after{content:""; position:absolute; inset:0; background:var(--gold); mix-blend-mode:color; opacity:0.08;}
+  .hero-arch img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block; filter:contrast(1.05);}
+  .hero-circle-cta{
+    display:inline-flex; align-items:center; gap:10px; margin-top:32px;
+    border:1px solid var(--gold); border-radius:999px; padding:14px 26px;
+    font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--gold);
+    transition:background .2s, color .2s;
+  }
+  .hero-circle-cta span{transition:transform .2s;}
+  .hero-circle-cta:hover{background:var(--gold); color:var(--black);}
+  .hero-circle-cta:hover span{transform:translateX(4px);}
+
+  @media (max-width:860px){
+    .hero-v2-grid{grid-template-columns:1fr; gap:34px;}
+    .hero-arch{order:-1; max-width:280px;}
+    .hero-flank{flex-direction:column; gap:6px; margin-bottom:28px;}
+  }
+
+  /* ---- SECTION SHELL ---- */
+  section{padding:96px 0; border-bottom:1px solid var(--rule);}
+  .section-title{font-size:clamp(1.6rem, 3.4vw, 2.3rem); font-weight:600; margin-bottom:16px;}
+  .section-desc{color:var(--silver); max-width:620px; margin-bottom:56px; font-size:1rem;}
+
+  /* ---- WHAT I DO ---- */
+  .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--rule); border:1px solid var(--rule);}
+  .capcard{background:var(--black); padding:32px 26px;}
+  .capcard .tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.06em;}
+  .capcard h3{font-size:1.15rem; margin:14px 0 10px; font-weight:600;}
+  .capcard p{color:var(--silver); font-size:0.92rem;}
+  @media (max-width:920px){.grid4{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.grid4{grid-template-columns:1fr;}}
+
+  /* ---- PROJECTS ---- */
+  .project{border:1px solid var(--rule); margin-bottom:22px; padding:34px 32px; transition:border-color .2s;}
+  .project:hover{border-color:var(--gold-dim);}
+  .project-top{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:12px; margin-bottom:14px;}
+  .project h3{font-size:1.4rem; font-weight:600;}
+  .project .ptag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold); border:1px solid var(--gold-dim); padding:4px 10px; border-radius:2px;}
+  .project p.blurb{color:var(--lsilver); max-width:680px; margin-bottom:18px;}
+  .project .tools{font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--silver); margin-bottom:6px;}
+  details{margin-top:14px;}
+  summary{cursor:pointer; font-size:0.88rem; color:var(--gold); font-weight:600; list-style:none;}
+  summary::-webkit-details-marker{display:none;}
+  summary::before{content:"+ "; color:var(--gold-dim);}
+  details[open] summary::before{content:"– ";}
+  .case{margin-top:18px; display:grid; grid-template-columns:repeat(2,1fr); gap:20px 40px;}
+  .case div h4{font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;}
+  .case div p{font-size:0.9rem; color:var(--lsilver);}
+  @media (max-width:640px){.case{grid-template-columns:1fr;}}
+
+  /* ---- ABOUT ---- */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start;}
+  .about-grid p{color:var(--lsilver); margin-bottom:16px;}
+  .about-grid p:last-child{margin-bottom:0;}
+  @media (max-width:800px){.about-grid{grid-template-columns:1fr; gap:30px;}}
+
+  /* ---- SKILLS ---- */
+  .skillcols{display:grid; grid-template-columns:repeat(4,1fr); gap:36px;}
+  .skillcols h4{font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--rule);}
+  .skillcols ul{list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .skillcols li{color:var(--lsilver); font-size:0.92rem;}
+  @media (max-width:920px){.skillcols{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.skillcols{grid-template-columns:1fr;}}
+
+  /* ---- EBOOK TEASER ---- */
+  .ebook-card{border:1px solid var(--gold-dim); padding:36px 32px; background:linear-gradient(180deg, rgba(201,162,39,0.05), transparent); margin-bottom:20px;}
+  .ebook-card h3{font-size:1.2rem; margin-bottom:10px;}
+  .ebook-blurb{color:var(--lsilver); margin-bottom:22px; font-size:0.95rem;}
+  .ebook-points{display:grid; grid-template-columns:1fr 1fr; gap:20px 32px; margin-bottom:30px;}
+  .ebook-point{font-size:0.94rem; color:var(--lsilver); line-height:1.55;}
+  .ebook-num{font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:600; margin-right:8px;}
+  @media (max-width:700px){.ebook-points{grid-template-columns:1fr;}}
+
+  /* ---- NOTIFY MODAL ---- */
+  #notifyModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:200; padding:20px;}
+  .notify-box{background:var(--charcoal); border:1px solid var(--gold-dim); padding:32px; max-width:400px; width:100%; border-radius:3px;}
+  .notify-box h3{font-size:1.15rem; margin-bottom:16px;}
+  .notify-box input{width:100%; background:var(--black); border:1px solid var(--rule); color:var(--white); padding:12px; border-radius:2px; font-family:'Manrope',sans-serif; margin-bottom:14px;}
+  .notify-box input:focus{outline:none; border-color:var(--gold);}
+  .notify-msg{font-size:0.85rem; min-height:18px; margin-bottom:14px;}
+  .notify-actions{display:flex; gap:10px;}
+
+  /* ---- CONTACT ---- */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px;}
+  .contact-grid h2{font-size:clamp(1.7rem,3.6vw,2.4rem); font-weight:600; margin-bottom:18px;}
+  .contact-grid p.lead{color:var(--silver); margin-bottom:28px; max-width:440px;}
+  .social-row{display:flex; gap:18px;}
+  .social-row a{font-family:'JetBrains Mono',monospace; font-size:0.85rem; border:1px solid var(--rule); padding:10px 16px; border-radius:2px; transition:border-color .2s, color .2s;}
+  .social-row a:hover{border-color:var(--gold); color:var(--gold);}
+  form{display:flex; flex-direction:column; gap:14px;}
+  .form-row{display:flex; gap:14px;}
+  input, textarea{
+    background:var(--charcoal); border:1px solid var(--rule); color:var(--white);
+    padding:13px 14px; font-family:'Manrope',sans-serif; font-size:0.95rem; border-radius:2px; width:100%;
+  }
+  input:focus, textarea:focus{border-color:var(--gold); outline:none;}
+  textarea{min-height:130px; resize:vertical;}
+  .submit-btn{
+    background:var(--gold); color:var(--black); border:none; padding:14px 24px;
+    font-weight:700; font-size:0.95rem; border-radius:2px; cursor:pointer; transition:background .2s;
+    font-family:'Manrope',sans-serif;
+  }
+  .submit-btn:hover{background:var(--white);}
+  @media (max-width:800px){.contact-grid{grid-template-columns:1fr;} .form-row{flex-direction:column;}}
+  @media (max-width:600px){
+    .wrap{padding:0 20px;}
+    .hero{padding:80px 0 56px;}
+    section{padding:64px 0;}
+    .project{padding:24px 20px;}
+    .capcard{padding:24px 20px;}
+  }
+
+  footer{padding:32px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:0.82rem; color:var(--silver);}
+  footer a:hover{color:var(--gold);}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* card + hover polish */
+  .capcard, .project{transition:transform .25s ease, border-color .2s ease, background .2s ease;}
+  .capcard:hover{transform:translateY(-4px); background:#101010;}
+  .project:hover{transform:translateY(-3px);}
+  .hero::after{animation:driftGlow 9s ease-in-out infinite alternate;}
+  @keyframes driftGlow{from{transform:translate(0,0) scale(1);} to{transform:translate(-30px,25px) scale(1.12);}}
+
+  /* stagger children as each section reveals */
+  .reveal .capcard, .reveal .project{opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease;}
+  .reveal.in .capcard, .reveal.in .project{opacity:1; transform:translateY(0);}
+  .reveal.in .capcard:nth-child(1){transition-delay:.05s;}
+  .reveal.in .capcard:nth-child(2){transition-delay:.15s;}
+  .reveal.in .capcard:nth-child(3){transition-delay:.25s;}
+  .reveal.in .capcard:nth-child(4){transition-delay:.35s;}
+  .reveal.in .project:nth-child(1){transition-delay:.05s;}
+  .reveal.in .project:nth-child(2){transition-delay:.18s;}
+  .reveal.in .project:nth-child(3){transition-delay:.3s;}
+</style>
+</head>
+<body>
+<div class="site-bg-parallax"></div>
+
+<header>
+  <nav>
+    <a href="#home" class="logo">PRY<span>ME</span></a>
+    <div class="navlinks" id="navLinks">
+      <a href="#skills" onclick="closeMenu()">Skills</a>
+      <a href="#ebook" onclick="closeMenu()">E-Book</a>
+      <a href="#shipped" onclick="closeMenu()">Projects</a>
+      <a href="#contact" onclick="closeMenu()">Contact</a>
+    </div>
+    <a class="navcta" href="#contact">Let's talk</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home" style="border-bottom:1px solid var(--rule); padding:80px 0 70px;">
+  <div class="wrap">
+    <div class="eyebrow hero-anim"><span class="dot"></span> PRYME — TECHNICAL WRITER</div>
+    <h2 class="section-title hero-anim" style="max-width:760px;">Write. Build. Design. — the work behind that idea.</h2>
+    <p class="hero-sub hero-anim" style="max-width:600px; margin-top:16px;">Technical writing, AI-assisted development, and design — here's what I do, what I've built, and what's coming next.</p>
+  </div>
+</section>
+
+<!-- WHAT I DO -->
+<section id="do">
+  <div class="wrap reveal">
+    <div class="doc-label">What I Do</div>
+    <h2 class="section-title">Four disciplines. One way of thinking.</h2>
+    <p class="section-desc">Writing is the foundation — AI-assisted development, design, and Web3 context are how the ideas get built and shipped.</p>
+  </div>
+  <div class="wrap reveal">
+    <div class="grid4">
+      <div class="capcard">
+        <div class="tag">Foundation</div>
+        <h3>Technical Writing</h3>
+        <p>Documentation, tutorials, API references, and developer-facing content that people actually finish reading.</p>
+      </div>
+      <div class="capcard">
+        <div class="tag">Build</div>
+        <h3>AI-Assisted Development</h3>
+        <p>Prototypes, internal tools, and small products built quickly with AI-assisted workflows, human-directed.</p>
+      </div>
+      <div class="capcard">
+        <div class="tag">Communicate</div>
+        <h3>Design</h3>
+        <p>Interfaces, visual identity, and content design that make technical products easier to use.</p>
+      </div>
+      <div class="capcard">
+        <div class="tag">Context</div>
+        <h3>Web3 Content</h3>
+        <p>Documentation and content strategy for Web3 products — explained clearly, without the jargon.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+  <div class="wrap reveal">
+    <div class="doc-label">Selected Work</div>
+    <h2 class="section-title">Case studies, not screenshots.</h2>
+    <p class="section-desc">A sample of representative projects across writing, development, and design. Details anonymized / illustrative.</p>
+
+    <div id="projectsList">
+      <p class="section-desc" style="margin-bottom:0;">Loading projects…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap reveal">
+    <div class="doc-label">About</div>
+    <h2 class="section-title">A technical writer who also builds.</h2>
+    <div class="about-grid">
+      <div>
+        <p>I'm Pryme — a technology-focused creator working at the intersection of technical writing, AI-assisted development, design, and Web3.</p>
+        <p>Writing is where I start. Most technical products fail not because the technology is weak, but because no one explained it clearly. That's the gap I work in.</p>
+      </div>
+      <div>
+        <p>AI-assisted development lets me go beyond describing a product to actually prototyping it. Design sharpens how it's communicated visually. Web3 gives me a technical niche where clear explanation is especially rare.</p>
+        <p>I use AI as a force multiplier, not a replacement for judgment — the thinking stays mine.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="wrap reveal">
+    <div class="doc-label">Skills</div>
+    <h2 class="section-title">Toolkit</h2>
+    <div class="skillcols">
+      <div>
+        <h4>Writing</h4>
+        <ul><li>Technical documentation</li><li>Tutorials & guides</li><li>API references</li><li>Content strategy</li></ul>
+      </div>
+      <div>
+        <h4>Development</h4>
+        <ul><li>AI-assisted coding</li><li>Prototyping</li><li>Web development</li><li>Automation</li></ul>
+      </div>
+      <div>
+        <h4>Design</h4>
+        <ul><li>Interface design</li><li>Visual content</li><li>Branding</li><li>Design systems</li></ul>
+      </div>
+      <div>
+        <h4>Web3</h4>
+        <ul><li>Protocol documentation</li><li>Ecosystem content</li><li>Technical explainers</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- E-BOOK TEASER -->
+<section id="ebook">
+  <div class="wrap reveal">
+    <div class="doc-label">E-Book</div>
+    <h2 class="section-title">A Technical Writing E-Book, from the ground up.</h2>
+    <p class="section-desc">A structured guide taking you from "what is technical writing?" to professional-level practice.</p>
+
+    <div id="ebookOnlyList">
+      <p class="section-desc" style="margin-bottom:0;">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMING SOON (non-ebook items) -->
+<section id="coming-soon">
+  <div class="wrap reveal">
+    <div class="doc-label">Coming Soon</div>
+    <h2 class="section-title">What's next.</h2>
+    <p class="section-desc">Projects in active development — get notified the moment they launch.</p>
+
+    <div id="comingSoonList">
+      <p class="section-desc" style="margin-bottom:0;">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<!-- REAL PROJECTS -->
+<section id="shipped">
+  <div class="wrap reveal">
+    <div class="doc-label">Completed Projects</div>
+    <h2 class="section-title">Shipped, not hypothetical.</h2>
+    <p class="section-desc">Real work, actually built and deployed — separate from the illustrative case studies above.</p>
+
+    <div id="shippedList">
+      <p class="section-desc" style="margin-bottom:0;">Loading…</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="border-bottom:none;">
+  <div class="wrap reveal">
+    <div class="doc-label">Contact</div>
+    <div class="contact-grid">
+      <div>
+        <h2>Have something technical that needs to be explained?</h2>
+        <p class="lead">Whether it's documentation, a prototype, or a design problem — tell me what you're working on.</p>
+        <div class="social-row">
+          <a href="https://twitter.com/d_top_pryme" target="_blank" rel="noopener">Twitter / X</a>
+          <a href="https://www.linkedin.com/in/peace-adesupo-0733bb303" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:oluwatimi1595@gmail.com">Email</a>
+        </div>
+      </div>
+      <div>
+        <form action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="9ba84618-847e-4017-924b-89acfe66d38d" />
+          <div class="form-row">
+            <input type="text" name="name" placeholder="Your name" required />
+            <input type="email" name="email" placeholder="Your email" required />
+          </div>
+          <input type="text" name="subject" placeholder="Subject" />
+          <textarea name="message" placeholder="Tell me about the project…" required></textarea>
+          <div class="checkbox-row" style="display:flex; align-items:flex-start; gap:8px; margin:4px 0;">
+            <input type="checkbox" id="agreeTerms" name="agreeTerms" required style="width:auto; margin-top:4px;" />
+            <label for="agreeTerms" style="font-size:0.82rem; color:var(--silver); text-transform:none; font-family:'Manrope',sans-serif;">I agree to the <a href="/terms.html" target="_blank" style="color:var(--gold);">Terms &amp; Conditions</a>.</label>
+          </div>
+          <button class="submit-btn" type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; width:100%;">
+    <span>© 2025 Pryme · Write. Build. Design.</span>
+    <span><a href="https://twitter.com/d_top_pryme" target="_blank" rel="noopener">@d_top_pryme</a> · <a href="https://www.linkedin.com/in/peace-adesupo-0733bb303" target="_blank" rel="noopener">LinkedIn</a> · <a href="/terms.html">Terms &amp; Conditions</a></span>
+  </div>
+</footer>
+
+<div id="notifyModal">
+  <div class="notify-box">
+    <h3 id="notifyModalTitle">Get notified</h3>
+    <input type="email" id="notifyModalEmail" placeholder="you@example.com" />
+    <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:14px;">
+      <input type="checkbox" id="notifyAgreeTerms" style="width:auto; margin-top:3px;" />
+      <label for="notifyAgreeTerms" style="font-size:0.8rem; color:var(--silver);">I agree to the <a href="/terms.html" target="_blank" style="color:var(--gold);">Terms &amp; Conditions</a>.</label>
+    </div>
+    <div class="notify-msg" id="notifyModalMsg"></div>
+    <div class="notify-actions">
+      <button class="btn btn-primary" id="notifyModalSubmit" onclick="submitNotify()">Notify Me</button>
+      <button class="btn" onclick="closeNotifyModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.getElementById('navLinks');
+  menuBtn.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    menuBtn.textContent = isOpen ? '✕' : '☰';
+    menuBtn.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+  });
+  function closeMenu(){
+    navLinks.classList.remove('open');
+    menuBtn.textContent = '☰';
+    menuBtn.setAttribute('aria-label', 'Open menu');
+  }
+
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, {threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+<script>
+  function escapeHtml(str){
+    return (str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function projectCardHtml(p){
+    const cover = p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)} cover" style="width:100%;border-radius:2px;margin-bottom:18px;display:block;">` : '';
+    const caseGrid = (p.problem || p.approach || p.whatIDid || p.result) ? `
+      <div class="case">
+        ${p.problem ? `<div><h4>Problem</h4><p>${escapeHtml(p.problem)}</p></div>` : ''}
+        ${p.approach ? `<div><h4>Approach</h4><p>${escapeHtml(p.approach)}</p></div>` : ''}
+        ${p.whatIDid ? `<div><h4>What I Did</h4><p>${escapeHtml(p.whatIDid)}</p></div>` : ''}
+        ${p.result ? `<div><h4>Result</h4><p>${escapeHtml(p.result)}</p></div>` : ''}
+      </div>` : '';
+    const longForm = (p.content && p.content.trim()) ? `
+      <details>
+        <summary>Read the full case study</summary>
+        <div class="case" style="grid-template-columns:1fr; margin-top:16px;">
+          <div>${typeof marked !== 'undefined' ? marked.parse(p.content) : escapeHtml(p.content)}</div>
+        </div>
+      </details>` : '';
+
+    return `
+    <div class="project">
+      <div class="project-top">
+        <h3>${escapeHtml(p.title)}</h3>
+        <span class="ptag">${escapeHtml(p.tag || '')}</span>
+      </div>
+      ${cover}
+      <p class="blurb">${escapeHtml(p.blurb)}</p>
+      ${p.tools ? `<div class="tools">Tools: ${escapeHtml(p.tools)}</div>` : ''}
+      ${caseGrid ? `<details><summary>Read the case study</summary>${caseGrid}</details>` : ''}
+      ${longForm}
+    </div>`;
+  }
+
+  function renderInto(containerId, list, emptyMsg){
+    const container = document.getElementById(containerId);
+    const visible = list.filter(p => p.published !== false).sort((a,b) => (a.order||0) - (b.order||0));
+    container.innerHTML = visible.length
+      ? visible.map(projectCardHtml).join('')
+      : `<p class="section-desc" style="margin-bottom:0;">${emptyMsg}</p>`;
+  }
+
+  function renderAll(all){
+    renderInto('projectsList', all.filter(p => p.section === 'work'), 'No case studies published yet.');
+    renderInto('shippedList', all.filter(p => p.section === 'shipped'), 'No completed projects published yet.');
+  }
+
+  // Fallback data so the page still renders correctly if opened directly as a
+  // local file (double-clicked) — browsers block fetch() to local files in
+  // that case. When served over http(s) — a local server or the live site —
+  // the fetch below succeeds instead and always reflects the latest content
+  // from the CMS. This should be kept in sync with projects.json manually
+  // ONLY if you want local double-click previews to match — the live site
+  // always uses the real projects.json, not this fallback.
+  const FALLBACK_PROJECTS = {
+    "projects": [
+      {
+        "id": "nodecast-docs", "section": "work", "published": true, "order": 1,
+        "title": "NodeCast Docs", "tag": "TECHNICAL WRITING · WEB3", "image": "",
+        "blurb": "A full documentation rebuild for a blockchain data-indexing API whose existing docs were costing the team support hours every week.",
+        "tools": "Markdown / Docusaurus · Postman · API testing · Notion",
+        "problem": "Developers were abandoning integration halfway through — docs described endpoints but not the reasoning behind them.",
+        "approach": "Rebuilt the docs around real integration journeys instead of a flat endpoint list, with runnable examples for each step.",
+        "whatIDid": "Audited every endpoint, rewrote the reference docs, and added a quickstart tested against the live API.",
+        "result": "Fewer repeated support questions and a shorter path from signup to first successful API call.",
+        "content": ""
+      },
+      {
+        "id": "auralis-onboarding", "section": "work", "published": true, "order": 2,
+        "title": "Auralis Onboarding", "tag": "AI-ASSISTED DEV · DESIGN", "image": "",
+        "blurb": "An AI-assisted rebuild of a SaaS product's onboarding flow, combining prototyping, copy, and interaction design in one pass.",
+        "tools": "React · AI-assisted coding workflow · Figma",
+        "problem": "New users dropped off in a five-step onboarding wizard with unclear copy and no sense of progress.",
+        "approach": "Prototyped three flow variants quickly using an AI-assisted build process, then tested them against real task completion.",
+        "whatIDid": "Rewrote onboarding copy, restructured the flow to three steps, and built the working prototype myself.",
+        "result": "A shorter, clearer flow the team shipped directly with minor engineering polish.",
+        "content": ""
+      },
+      {
+        "id": "glassframe-design-system", "section": "work", "published": true, "order": 3,
+        "title": "Glassframe Design System", "tag": "DESIGN · DOCUMENTATION", "image": "",
+        "blurb": "A component library and its documentation, built together so the design system and the docs never drift apart.",
+        "tools": "Figma · Storybook · Markdown",
+        "problem": "Design and docs were maintained separately, so the documented components regularly didn't match what shipped.",
+        "approach": "Treated the component docs as part of the design deliverable, not an afterthought written later.",
+        "whatIDid": "Designed the core components and wrote usage guidelines for each one as it was finalized.",
+        "result": "One source of truth for design and engineering, reducing inconsistency between the two.",
+        "content": ""
+      },
+      {
+        "id": "mindpath", "section": "shipped", "published": true, "order": 1,
+        "title": "MindPath", "tag": "AI-ASSISTED DEVELOPMENT", "image": "",
+        "blurb": "A Gemini-powered Telegram bot built with a humanized personality, vision support, and per-chat memory so conversations carry context over time.",
+        "tools": "Google Gemini API · Telegram Bot API · Render (hosting) · cron-job.org (uptime)",
+        "problem": "", "approach": "", "whatIDid": "", "result": "",
+        "content": "Currently deployed and running."
+      }
+    ]
+  };
+
+  fetch('projects.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(data => renderAll(data.projects || []))
+    .catch(() => renderAll(FALLBACK_PROJECTS.projects));
+
+  function comingSoonCardHtml(item){
+    const cover = item.image ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}" style="width:100%;border-radius:2px;margin-bottom:18px;display:block;">` : '';
+    const points = (item.points || []).map((p, i) =>
+      `<div class="ebook-point"><span class="ebook-num">0${i+1}</span> ${escapeHtml(p)}</div>`
+    ).join('');
+    return `
+    <div class="ebook-card">
+      <h3>${escapeHtml(item.title)}</h3>
+      ${cover}
+      <p class="ebook-blurb">${escapeHtml(item.blurb || '')}</p>
+      <div class="ebook-points">${points}</div>
+      <button class="btn btn-primary" onclick="openNotifyModal('${escapeHtml(item.id)}','${escapeHtml(item.title)}')">Get notified when it launches</button>
+    </div>`;
+  }
+
+  fetch('coming-soon.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      const all = (data.items || []).filter(i => i.published !== false).sort((a,b) => (a.order||0)-(b.order||0));
+      const ebookItems = all.filter(i => i.id === 'ebook');
+      const otherItems = all.filter(i => i.id !== 'ebook');
+
+      document.getElementById('ebookOnlyList').innerHTML = ebookItems.length
+        ? ebookItems.map(comingSoonCardHtml).join('')
+        : '<p class="section-desc" style="margin-bottom:0;">Details coming soon.</p>';
+
+      document.getElementById('comingSoonList').innerHTML = otherItems.length
+        ? otherItems.map(comingSoonCardHtml).join('')
+        : '<p class="section-desc" style="margin-bottom:0;">Nothing else announced yet — check back soon.</p>';
+    })
+    .catch(() => {
+      document.getElementById('ebookOnlyList').innerHTML = '<p class="section-desc" style="margin-bottom:0;">Could not load — check back soon.</p>';
+      document.getElementById('comingSoonList').innerHTML = '<p class="section-desc" style="margin-bottom:0;">Could not load — check back soon.</p>';
+    });
+
+  const NOTIFY_WORKER_URL = "https://pryme-notify.oluwatimi2253.workers.dev";
+
+  window.openNotifyModal = function(projectId, projectTitle){
+    document.getElementById('notifyModalTitle').textContent = 'Get notified: ' + projectTitle;
+    document.getElementById('notifyModalEmail').value = '';
+    document.getElementById('notifyAgreeTerms').checked = false;
+    document.getElementById('notifyModalMsg').textContent = '';
+    document.getElementById('notifyModal').dataset.projectId = projectId;
+    document.getElementById('notifyModal').dataset.projectTitle = projectTitle;
+    document.getElementById('notifyModal').style.display = 'flex';
+  };
+  window.closeNotifyModal = function(){
+    document.getElementById('notifyModal').style.display = 'none';
+  };
+  window.submitNotify = function(){
+    const modal = document.getElementById('notifyModal');
+    const email = document.getElementById('notifyModalEmail').value.trim();
+    const msg = document.getElementById('notifyModalMsg');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      msg.textContent = "That doesn't look like a valid email.";
+      msg.style.color = '#c94a2a';
+      return;
+    }
+    if (!document.getElementById('notifyAgreeTerms').checked){
+      msg.textContent = 'Please agree to the Terms & Conditions to continue.';
+      msg.style.color = '#c94a2a';
+      return;
+    }
+    const btn = document.getElementById('notifyModalSubmit');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(NOTIFY_WORKER_URL + '/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, projectId: modal.dataset.projectId, projectTitle: modal.dataset.projectTitle })
+    }).then(r => r.json()).then(data => {
+      if (data.error){ throw new Error(data.error); }
+      msg.textContent = "You're on the list — check your inbox.";
+      msg.style.color = 'var(--gold)';
+      setTimeout(closeNotifyModal, 1800);
+    }).catch(() => {
+      msg.textContent = 'Something went wrong. Please try again shortly.';
+      msg.style.color = '#c94a2a';
+    }).finally(() => {
+      btn.disabled = false; btn.textContent = 'Notify Me';
+    });
+  };
+</script>
+
+</body>
+</html>
