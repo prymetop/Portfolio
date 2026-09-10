@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pryme — Technical Writer · AI-Assisted Developer · Designer</title>
+<title>Pryme: Technical Writer · AI-Assisted Developer · Designer</title>
 <meta name="description" content="Pryme writes, builds, and designs technology that people can actually understand and use." />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --black:#0A0A0A; --charcoal:#151515; --silver:#A7A7A7; --lsilver:#D0D0D0;
@@ -16,6 +16,14 @@
   body{
     background:var(--black); color:var(--white); font-family:'Manrope',sans-serif;
     display:flex; flex-direction:column; overflow:hidden;
+    animation:pageFadeIn .5s ease;
+  }
+  @keyframes pageFadeIn{from{opacity:0;} to{opacity:1;}}
+  body.fading-out{animation:pageFadeOut .3s ease forwards;}
+  @keyframes pageFadeOut{to{opacity:0;}}
+  @media (prefers-reduced-motion: reduce){
+    body{animation:none;}
+    body.fading-out{animation:none;}
   }
   h1{font-family:'Space Grotesk',sans-serif;}
   a{color:inherit; text-decoration:none;}
@@ -23,7 +31,7 @@
 
   .cover{flex:1; display:flex; flex-direction:column; padding:32px 40px; max-width:1280px; margin:0 auto; width:100%;}
   .cover-flank{display:flex; justify-content:space-between;}
-  .cover-flank span{font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em;}
+  .cover-flank span{font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em; font-size:0.8rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em;}
 
   .cover-main{flex:1; display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;}
   .cover-copy{max-width:520px;}
@@ -32,12 +40,12 @@
   .cover-sub{color:var(--lsilver); font-size:1rem; margin-bottom:30px; opacity:0; animation:fadeUp .8s ease forwards .25s;}
   .cover-cta{
     display:inline-flex; align-items:center; gap:10px; border:1px solid var(--gold); border-radius:999px;
-    padding:15px 28px; font-family:'JetBrains Mono',monospace; font-size:0.9rem; color:var(--gold);
+    padding:15px 28px; font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em; font-size:0.9rem; color:var(--gold);
     transition:background .2s, color .2s; opacity:0; animation:fadeUp .8s ease forwards .4s;
   }
-  .cover-cta span{transition:transform .2s;}
+  .cover-cta svg{transition:transform .2s;}
   .cover-cta:hover{background:var(--gold); color:var(--black);}
-  .cover-cta:hover span{transform:translateX(4px);}
+  .cover-cta:hover svg{transform:translateX(4px);}
 
   .cover-arch{
     position:relative; aspect-ratio:3/4; max-width:420px; margin:0 auto; width:100%;
@@ -48,7 +56,7 @@
   .cover-arch::after{content:""; position:absolute; inset:0; background:var(--gold); mix-blend-mode:color; opacity:0.08; z-index:1;}
   .cover-arch img{width:100%; height:100%; object-fit:cover; object-position:top center; display:block;}
 
-  .cover-footer{display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--silver);}
+  .cover-footer{display:flex; justify-content:space-between; align-items:center; font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em; font-size:0.75rem; color:var(--silver);}
   .cover-footer a:hover{color:var(--gold);}
 
   @keyframes fadeUp{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
@@ -79,7 +87,7 @@
     <div class="cover-copy">
       <h1 class="cover-name">Hello, I'm<br><em>Pryme.</em></h1>
       <p class="cover-sub">I write, build, and design technology that people can actually understand and use.</p>
-      <a href="portfolio.html" class="cover-cta">View Portfolio <span>→</span></a>
+      <a href="portfolio.html" class="cover-cta">View Portfolio <i data-lucide="arrow-right" width="16" height="16"></i></a>
     </div>
     <div class="cover-arch">
       <picture>
@@ -95,5 +103,18 @@
   </div>
 </div>
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+  lucide.createIcons();
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelector('.cover-cta').addEventListener('click', function(e){
+    if (prefersReducedMotion) return; // let the link navigate normally
+    e.preventDefault();
+    const href = this.getAttribute('href');
+    document.body.classList.add('fading-out');
+    setTimeout(() => { window.location.href = href; }, 280);
+  });
+</script>
 </body>
 </html>

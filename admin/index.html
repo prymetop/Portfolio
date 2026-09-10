@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pryme — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Pryme: Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --black:#0A0A0A; --charcoal:#151515; --dgray:#202020;
@@ -15,7 +15,7 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--black); color:var(--white); font-family:'Manrope',sans-serif; min-height:100vh;}
   h1,h2,h3{font-family:'Space Grotesk',sans-serif;}
-  .mono{font-family:'JetBrains Mono',monospace;}
+  .mono{font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em;}
   a{color:inherit;}
   ::selection{background:var(--gold); color:var(--black);}
 
@@ -64,7 +64,7 @@
   .p-card .noimg{width:52px; height:52px; border-radius:3px; background:var(--dgray); flex-shrink:0;}
   .p-card .info{flex:1; min-width:0;}
   .p-card h3{font-size:1rem; margin-bottom:3px;}
-  .p-card .meta{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--silver);}
+  .p-card .meta{font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em; font-size:0.72rem; color:var(--silver);}
   .p-card .meta .hidden-tag{color:var(--danger);}
   .p-card .actions{display:flex; gap:8px; flex-shrink:0;}
   .empty-note{color:var(--silver); font-size:0.9rem; padding:20px 0;}
@@ -73,7 +73,7 @@
   #editorView{display:none;}
   .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
   .form-grid .full{grid-column:1/-1;}
-  label{display:block; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;}
+  label{display:block; font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em; font-size:0.72rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;}
   .hint{color:var(--silver); font-size:0.78rem; margin-top:5px;}
   input[type=text], input[type=number], textarea, select{
     width:100%; background:var(--charcoal); border:1px solid var(--rule); color:var(--white);
@@ -90,7 +90,7 @@
   .editor-title{margin-bottom:6px;}
   .editor-sub{color:var(--silver); font-size:0.88rem; margin-bottom:28px;}
   fieldset{border:none; margin:28px 0 0; padding:0;}
-  legend{font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--rule); width:100%;}
+  legend{font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.05em; font-size:0.72rem; color:var(--silver); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--rule); width:100%;}
 
   @media (max-width:640px){ .form-grid{grid-template-columns:1fr;} }
 </style>
@@ -477,7 +477,7 @@
 
       return saveProjectsFile((state.editingId ? 'Update' : 'Add') + ' project: ' + project.title);
     }).then(function(){
-      toast('Saved and published — live in about a minute.');
+      toast('Saved and published. Live in about a minute.');
       state.editingId = null;
       renderDashboard();
     }).catch(function(err){
@@ -597,7 +597,7 @@
       if (idx > -1) csState.items[idx] = item; else csState.items.push(item);
       return csSaveFile((csState.editingId ? 'Update' : 'Add') + ' coming soon item: ' + item.title);
     }).then(function(){
-      toast('Saved and published — live in about a minute.');
+      toast('Saved and published. Live in about a minute.');
       csState.editingId = null;
       csRenderDashboard();
     }).catch(function(err){
