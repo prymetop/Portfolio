@@ -277,6 +277,29 @@
     .capcard{padding:24px 20px;}
   }
 
+  /* ---- promo ticker ---- */
+  .promo-ticker{
+    overflow:hidden; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    background:var(--charcoal); padding:var(--space-4) 0;
+  }
+  .promo-track{
+    display:flex; width:max-content; gap:0;
+    animation:promoScroll 26s linear infinite;
+  }
+  .promo-set{display:flex;}
+  .promo-track span{
+    font-family:'Manrope',sans-serif; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+    font-size:0.85rem; color:var(--gold); white-space:nowrap; padding:0 var(--space-6);
+    border-right:1px solid var(--rule);
+  }
+  .promo-ticker:hover .promo-track{animation-play-state:paused;}
+  @keyframes promoScroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  @media (prefers-reduced-motion: reduce){
+    .promo-track{animation:none; flex-wrap:wrap; width:100%;}
+    .promo-set:nth-child(2){display:none;}
+    .promo-set{flex-wrap:wrap;}
+  }
+
   footer{padding:32px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:0.82rem; color:var(--silver);}
   footer a:hover{color:var(--gold);}
 
@@ -524,6 +547,11 @@
   </div>
 </section>
 
+<!-- PROMO TICKER -->
+<div class="promo-ticker" id="promoTicker" aria-hidden="true" style="display:none;">
+  <div class="promo-track" id="promoTrack"></div>
+</div>
+
 <footer>
   <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; width:100%;">
     <span>© 2025 Pryme · Write. Build. Design.</span>
@@ -617,7 +645,7 @@
 
   function renderAll(all){
     renderInto('projectsList', all.filter(p => p.section === 'work'), "Nothing here yet. Check back once that changes.");
-    renderInto('shippedList', all.filter(p => p.section === 'shipped'), 'No completed projects published yet.');
+    renderInto('shippedList', all.filter(p => p.section === 'shipped'), 'Nothing shipped yet. The first one is on its way.');
   }
 
   // Fallback data so the page still renders correctly if opened directly as a
@@ -669,11 +697,11 @@
 
       document.getElementById('ebookOnlyList').innerHTML = ebookItems.length
         ? ebookItems.map(comingSoonCardHtml).join('')
-        : '<p class="section-desc" style="margin-bottom:0;">Details coming soon.</p>';
+        : '<p class="section-desc" style="margin-bottom:0;">The e-book isn\'t public yet, but it\'s being written.</p>';
 
       document.getElementById('comingSoonList').innerHTML = otherItems.length
         ? otherItems.map(comingSoonCardHtml).join('')
-        : '<p class="section-desc" style="margin-bottom:0;">Nothing else announced yet. Check back soon.</p>';
+        : '<p class="section-desc" style="margin-bottom:0;">Nothing else in the works right now, but that\'s about to change.</p>';
     })
     .catch(() => {
       document.getElementById('ebookOnlyList').innerHTML = '<p class="section-desc" style="margin-bottom:0;">Could not load. Check back soon.</p>';
@@ -728,6 +756,18 @@
   };
 
   lucide.createIcons();
+
+  fetch('ads.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      if (!data.enabled || !data.items || data.items.length === 0) return;
+      const track = document.getElementById('promoTrack');
+      const setHtml = data.items.map(t => `<span>${escapeHtml(t)}</span>`).join('');
+      track.innerHTML = `<div class="promo-set">${setHtml}</div><div class="promo-set">${setHtml}</div>`;
+      track.style.animationDuration = (data.speed || 26) + 's';
+      document.getElementById('promoTicker').style.display = 'block';
+    })
+    .catch(() => {});
 </script>
 
 </body>

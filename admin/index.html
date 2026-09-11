@@ -38,8 +38,25 @@
 
   /* ---- login ---- */
   #loginView{display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center; gap:22px;}
-  #loginView img{height:48px; margin-bottom:6px;}
-  #loginView p{color:var(--silver); max-width:360px;}
+  .login-card{
+    position:relative; overflow:hidden; background:var(--charcoal); border:1px solid var(--rule);
+    border-radius:var(--radius-xl); padding:48px 40px; max-width:400px; width:100%;
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+  }
+  .login-glow{
+    position:absolute; top:-40%; left:50%; transform:translateX(-50%); width:280px; height:280px;
+    background:radial-gradient(circle, rgba(201,162,39,0.14), transparent 70%); pointer-events:none;
+  }
+  .login-card img{height:44px; position:relative; z-index:1;}
+  .login-eyebrow{
+    font-family:'Manrope',sans-serif; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    font-size:0.68rem; color:var(--gold); border:1px solid var(--gold-dim); border-radius:var(--radius-full);
+    padding:4px 14px; position:relative; z-index:1;
+  }
+  .login-card h1{font-size:1.35rem; position:relative; z-index:1;}
+  #loginView p{color:var(--silver); max-width:320px; font-size:0.9rem; position:relative; z-index:1;}
+  .login-btn{display:inline-flex; align-items:center; gap:10px; position:relative; z-index:1;}
+  .login-footnote{font-size:0.75rem; color:var(--silver); opacity:0.7; position:relative; z-index:1; margin-top:4px;}
 
   /* ---- toast ---- */
   #toast{
@@ -100,10 +117,18 @@
 <div id="app">
 
   <div id="loginView">
-    <img src="/assets/cms-logo.svg" alt="Pryme" />
-    <h1 style="font-size:1.3rem;">Admin Dashboard</h1>
-    <p>Log in with the GitHub account connected to this site to add, edit, or remove projects.</p>
-    <button class="btn btn-primary" id="loginBtn">Log in with GitHub</button>
+    <div class="login-card">
+      <div class="login-glow"></div>
+      <img src="/assets/cms-logo.svg" alt="Pryme" />
+      <div class="login-eyebrow">Admin Access</div>
+      <h1>Content Dashboard</h1>
+      <p>Log in with the GitHub account connected to this site to add, edit, or publish content.</p>
+      <button class="btn btn-primary login-btn" id="loginBtn">
+        <i data-lucide="github" width="18" height="18"></i>
+        Log in with GitHub
+      </button>
+      <div class="login-footnote">Only accounts with write access to this repository can sign in.</div>
+    </div>
   </div>
 
   <div id="mainView" style="display:none;">
@@ -117,7 +142,9 @@
 
     <div style="display:flex; gap:10px; margin-bottom:24px;">
       <button class="btn btn-primary" id="tabProjects">Projects</button>
+      <button class="btn" id="tabEbook">E-Book</button>
       <button class="btn" id="tabComingSoon">Coming Soon</button>
+      <button class="btn" id="tabAds">Ads</button>
     </div>
 
     <div id="dashboardView">
@@ -126,6 +153,63 @@
         <button class="btn btn-primary" id="addBtn">+ Add New Project</button>
       </div>
       <div id="cardGrid" class="card-grid"></div>
+    </div>
+
+    <div id="adsEditorView" style="display:none;">
+      <h2 class="editor-title">Ads (Promo Ticker)</h2>
+      <p class="editor-sub">This is the scrolling promo banner near the bottom of the site. It's a single record, same as E-Book.</p>
+      <div class="form-grid">
+        <div class="full checkbox-row">
+          <input type="checkbox" id="ad_enabled" checked />
+          <label for="ad_enabled">Enabled (visible on live site)</label>
+        </div>
+        <div>
+          <label>Scroll Speed (seconds per loop, lower = faster)</label>
+          <input type="number" id="ad_speed" value="26" min="8" max="90" />
+        </div>
+        <div class="full">
+          <label>Ticker Items (one per line)</label>
+          <textarea id="ad_items" class="tall" placeholder="One phrase per line"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="adSaveBtn">Save &amp; Publish</button>
+      </div>
+    </div>
+
+    <div id="ebookEditorView" style="display:none;">
+      <h2 class="editor-title">E-Book</h2>
+      <p class="editor-sub">This is a single record. There's only one E-Book entry, so there's no add/delete here, just edit and save.</p>
+      <div class="form-grid">
+        <div class="full">
+          <label>Title</label>
+          <input type="text" id="eb_title" placeholder="E-Book title" />
+        </div>
+        <div class="full checkbox-row">
+          <input type="checkbox" id="eb_published" checked />
+          <label for="eb_published">Published (visible on live site)</label>
+        </div>
+        <div class="full">
+          <label>Cover Image</label>
+          <input type="file" id="eb_image_file" accept="image/*" />
+          <div class="hint" id="eb_image_current"></div>
+          <img id="eb_image_preview" class="img-preview" />
+          <div style="margin-top:8px;">
+            <button type="button" class="btn btn-danger" id="ebRemoveImageBtn" style="display:none; font-size:0.78rem; padding:6px 12px;">Remove Image</button>
+          </div>
+        </div>
+        <div class="full">
+          <label>Blurb</label>
+          <textarea id="eb_blurb" placeholder="One or two sentences describing the e-book"></textarea>
+        </div>
+        <div class="full">
+          <label>Highlight Points (one per line)</label>
+          <textarea id="eb_points" class="tall" placeholder="One selling point per line"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="ebSaveBtn">Save &amp; Publish</button>
+      </div>
     </div>
 
     <div id="csDashboardView" style="display:none;">
@@ -195,7 +279,7 @@
         <div>
           <label>Section</label>
           <select id="f_section">
-            <option value="work">Selected Work (illustrative case studies)</option>
+            <option value="work">Jobs</option>
             <option value="shipped">Completed Projects (real, shipped work)</option>
           </select>
         </div>
@@ -257,6 +341,7 @@
 
 <div id="toast"></div>
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script>
 (function(){
   // ---- config ----
@@ -523,11 +608,12 @@
     $('csDashboardView').style.display = 'block';
     $('csEditorView').style.display = 'none';
     var grid = $('csCardGrid');
-    if (csState.items.length === 0){
+    var nonEbookItems = csState.items.filter(function(x){ return x.id !== 'ebook'; });
+    if (nonEbookItems.length === 0){
       grid.innerHTML = '<p class="empty-note">No coming soon items yet.</p>';
       return;
     }
-    var sorted = csState.items.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+    var sorted = nonEbookItems.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
     grid.innerHTML = sorted.map(function(p){
       var img = p.image ? '<img src="/' + p.image + '" onerror="this.style.display=\'none\'" />' : '<div class="noimg"></div>';
       var hidden = p.published === false ? ' · <span class="hidden-tag">HIDDEN</span>' : '';
@@ -621,21 +707,146 @@
   function showProjectsTab(){
     $('tabProjects').className = 'btn btn-primary';
     $('tabComingSoon').className = 'btn';
+    $('tabEbook').className = 'btn';
+    $('tabAds').className = 'btn';
     $('dashboardView').style.display = 'block';
     $('csDashboardView').style.display = 'none';
     $('csEditorView').style.display = 'none';
+    $('ebookEditorView').style.display = 'none';
+    $('adsEditorView').style.display = 'none';
     $('editorView').style.display = 'none';
   }
   function showComingSoonTab(){
     $('tabComingSoon').className = 'btn btn-primary';
     $('tabProjects').className = 'btn';
+    $('tabEbook').className = 'btn';
+    $('tabAds').className = 'btn';
     $('dashboardView').style.display = 'none';
     $('editorView').style.display = 'none';
     $('csEditorView').style.display = 'none';
+    $('ebookEditorView').style.display = 'none';
+    $('adsEditorView').style.display = 'none';
     $('csDashboardView').style.display = 'block';
   }
 
+  var ebImageRemoved = false;
+
+  function showAdsTab(){
+    $('tabAds').className = 'btn btn-primary';
+    $('tabProjects').className = 'btn';
+    $('tabEbook').className = 'btn';
+    $('tabComingSoon').className = 'btn';
+    $('dashboardView').style.display = 'none';
+    $('editorView').style.display = 'none';
+    $('csDashboardView').style.display = 'none';
+    $('csEditorView').style.display = 'none';
+    $('ebookEditorView').style.display = 'none';
+    $('adsEditorView').style.display = 'block';
+  }
+
+  function showEbookTab(){
+    $('tabEbook').className = 'btn btn-primary';
+    $('tabProjects').className = 'btn';
+    $('tabComingSoon').className = 'btn';
+    $('tabAds').className = 'btn';
+    $('dashboardView').style.display = 'none';
+    $('editorView').style.display = 'none';
+    $('csDashboardView').style.display = 'none';
+    $('csEditorView').style.display = 'none';
+    $('adsEditorView').style.display = 'none';
+    $('ebookEditorView').style.display = 'block';
+
+    var eb = csState.items.find(function(x){ return x.id === 'ebook'; });
+    ebImageRemoved = false;
+    $('eb_title').value = eb ? eb.title || '' : 'Technical Writing E-Book';
+    $('eb_published').checked = eb ? eb.published !== false : true;
+    $('eb_blurb').value = eb ? eb.blurb || '' : '';
+    $('eb_points').value = eb && eb.points ? eb.points.join('\n') : '';
+    $('eb_image_file').value = '';
+    $('eb_image_current').textContent = eb && eb.image ? 'Current image: ' + eb.image : 'No image set yet.';
+    var preview = $('eb_image_preview');
+    if (eb && eb.image){ preview.src = '/' + eb.image; preview.style.display = 'block'; }
+    else { preview.style.display = 'none'; }
+    $('ebRemoveImageBtn').style.display = (eb && eb.image) ? 'inline-block' : 'none';
+  }
+
+  // ==== Ads (promo ticker) ====
+  var ADS_FILE_PATH = "ads.json";
+  var adsState = { data: null, sha: null };
+
+  function adsLoad(){
+    return ghGetFile(ADS_FILE_PATH).then(function(res){
+      adsState.data = JSON.parse(b64DecodeUnicode(res.content.replace(/\n/g, '')));
+      adsState.sha = res.sha;
+    });
+  }
+  function adsRenderForm(){
+    var d = adsState.data || { enabled: true, speed: 26, items: [] };
+    $('ad_enabled').checked = d.enabled !== false;
+    $('ad_speed').value = d.speed || 26;
+    $('ad_items').value = (d.items || []).join('\n');
+  }
+  function saveAds(){
+    var data = {
+      enabled: $('ad_enabled').checked,
+      speed: parseInt($('ad_speed').value, 10) || 26,
+      items: $('ad_items').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean)
+    };
+    $('adSaveBtn').disabled = true;
+    $('adSaveBtn').textContent = 'Saving…';
+    ghPutFile(ADS_FILE_PATH, b64EncodeUnicode(JSON.stringify(data, null, 2)), 'Update ads/promo ticker', adsState.sha)
+      .then(function(res){
+        adsState.sha = res.content.sha;
+        adsState.data = data;
+        toast('Saved and published. Live in about a minute.');
+      }).catch(function(err){
+        toast('Error: ' + err.message, true);
+      }).finally(function(){
+        $('adSaveBtn').disabled = false;
+        $('adSaveBtn').textContent = 'Save & Publish';
+      });
+  }
+
+  function saveEbook(){
+    var existing = csState.items.find(function(x){ return x.id === 'ebook'; });
+    var item = {
+      id: 'ebook',
+      published: $('eb_published').checked,
+      order: existing ? (existing.order || 1) : 1,
+      title: $('eb_title').value.trim() || 'Technical Writing E-Book',
+      blurb: $('eb_blurb').value.trim(),
+      points: $('eb_points').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean),
+      image: existing ? (ebImageRemoved ? '' : (existing.image || '')) : ''
+    };
+
+    $('ebSaveBtn').disabled = true;
+    $('ebSaveBtn').textContent = 'Saving…';
+
+    var imageFile = $('eb_image_file').files[0];
+    var imageStep = imageFile
+      ? readFileAsBase64(imageFile).then(function(b64){
+          var ext = imageFile.name.split('.').pop();
+          var path = 'assets/projects/ebook-' + Date.now() + '.' + ext;
+          return ghPutFile(path, b64, 'Upload E-Book cover image').then(function(){ item.image = path; });
+        })
+      : Promise.resolve();
+
+    imageStep.then(function(){
+      var idx = csState.items.findIndex(function(x){ return x.id === 'ebook'; });
+      if (idx > -1) csState.items[idx] = item; else csState.items.push(item);
+      return csSaveFile('Update E-Book entry');
+    }).then(function(){
+      toast('E-Book saved and published. Live in about a minute.');
+    }).catch(function(err){
+      toast('Error: ' + err.message, true);
+    }).finally(function(){
+      $('ebSaveBtn').disabled = false;
+      $('ebSaveBtn').textContent = 'Save & Publish';
+    });
+  }
+
   function boot(){
+    lucide.createIcons();
     var token = checkAuth();
     if (!token){
       $('loginView').style.display = 'flex';
@@ -675,6 +886,38 @@
       if (csState.sha === null){
         csLoad().then(csRenderDashboard).catch(function(err){ toast('Could not load coming soon items: ' + err.message, true); });
       }
+    });
+    $('tabEbook').addEventListener('click', function(){
+      showEbookTab();
+      if (csState.sha === null){
+        csLoad().then(showEbookTab).catch(function(err){ toast('Could not load E-Book data: ' + err.message, true); });
+      }
+    });
+    $('tabAds').addEventListener('click', function(){
+      showAdsTab();
+      if (adsState.sha === null){
+        adsLoad().then(adsRenderForm).catch(function(err){ toast('Could not load ads data: ' + err.message, true); });
+      } else {
+        adsRenderForm();
+      }
+    });
+    $('adSaveBtn').addEventListener('click', saveAds);
+    $('ebSaveBtn').addEventListener('click', saveEbook);
+    $('eb_image_file').addEventListener('change', function(){
+      var f = this.files[0];
+      if (f){
+        ebImageRemoved = false;
+        var reader = new FileReader();
+        reader.onload = function(){ $('eb_image_preview').src = reader.result; $('eb_image_preview').style.display = 'block'; };
+        reader.readAsDataURL(f);
+      }
+    });
+    $('ebRemoveImageBtn').addEventListener('click', function(){
+      ebImageRemoved = true;
+      $('eb_image_file').value = '';
+      $('eb_image_preview').style.display = 'none';
+      $('eb_image_current').textContent = 'Image will be removed on save.';
+      this.style.display = 'none';
     });
     $('csAddBtn').addEventListener('click', function(){ csOpenEditor(null); });
     $('csCancelBtn').addEventListener('click', csRenderDashboard);
