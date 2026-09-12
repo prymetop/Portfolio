@@ -171,6 +171,16 @@
           <label>Ticker Items (one per line)</label>
           <textarea id="ad_items" class="tall" placeholder="One phrase per line"></textarea>
         </div>
+        <div class="full">
+          <label>Small Logo/Icon (optional)</label>
+          <input type="file" id="ad_image_file" accept="image/*" />
+          <div class="hint" id="ad_image_current"></div>
+          <img id="ad_image_preview" class="img-preview" style="max-height:32px; width:auto; max-width:120px;" />
+          <div style="margin-top:8px;">
+            <button type="button" class="btn btn-danger" id="adRemoveImageBtn" style="display:none; font-size:0.78rem; padding:6px 12px;">Remove Image</button>
+          </div>
+          <div class="hint">Shown small, inline with the text. It won't change the ticker's size on the live site.</div>
+        </div>
       </div>
       <div class="form-actions">
         <button class="btn btn-primary" id="adSaveBtn">Save &amp; Publish</button>
@@ -774,6 +784,8 @@
   var ADS_FILE_PATH = "ads.json";
   var adsState = { data: null, sha: null };
 
+  var adImageRemoved = false;
+
   function adsLoad(){
     return ghGetFile(ADS_FILE_PATH).then(function(res){
       adsState.data = JSON.parse(b64DecodeUnicode(res.content.replace(/\n/g, '')));
@@ -781,21 +793,41 @@
     });
   }
   function adsRenderForm(){
-    var d = adsState.data || { enabled: true, speed: 26, items: [] };
+    var d = adsState.data || { enabled: true, speed: 26, image: '', items: [] };
+    adImageRemoved = false;
     $('ad_enabled').checked = d.enabled !== false;
     $('ad_speed').value = d.speed || 26;
     $('ad_items').value = (d.items || []).join('\n');
+    $('ad_image_file').value = '';
+    $('ad_image_current').textContent = d.image ? 'Current image: ' + d.image : 'No image set yet.';
+    var preview = $('ad_image_preview');
+    if (d.image){ preview.src = '/' + d.image; preview.style.display = 'inline-block'; }
+    else { preview.style.display = 'none'; }
+    $('adRemoveImageBtn').style.display = d.image ? 'inline-block' : 'none';
   }
   function saveAds(){
+    var existing = adsState.data || {};
     var data = {
       enabled: $('ad_enabled').checked,
       speed: parseInt($('ad_speed').value, 10) || 26,
+      image: adImageRemoved ? '' : (existing.image || ''),
       items: $('ad_items').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean)
     };
     $('adSaveBtn').disabled = true;
     $('adSaveBtn').textContent = 'Saving…';
-    ghPutFile(ADS_FILE_PATH, b64EncodeUnicode(JSON.stringify(data, null, 2)), 'Update ads/promo ticker', adsState.sha)
-      .then(function(res){
+
+    var imageFile = $('ad_image_file').files[0];
+    var imageStep = imageFile
+      ? readFileAsBase64(imageFile).then(function(b64){
+          var ext = imageFile.name.split('.').pop();
+          var path = 'assets/projects/ads-logo-' + Date.now() + '.' + ext;
+          return ghPutFile(path, b64, 'Upload ads/promo ticker image').then(function(){ data.image = path; });
+        })
+      : Promise.resolve();
+
+    imageStep.then(function(){
+      return ghPutFile(ADS_FILE_PATH, b64EncodeUnicode(JSON.stringify(data, null, 2)), 'Update ads/promo ticker', adsState.sha);
+    }).then(function(res){
         adsState.sha = res.content.sha;
         adsState.data = data;
         toast('Saved and published. Live in about a minute.');
@@ -902,6 +934,22 @@
       }
     });
     $('adSaveBtn').addEventListener('click', saveAds);
+    $('ad_image_file').addEventListener('change', function(){
+      var f = this.files[0];
+      if (f){
+        adImageRemoved = false;
+        var reader = new FileReader();
+        reader.onload = function(){ $('ad_image_preview').src = reader.result; $('ad_image_preview').style.display = 'inline-block'; };
+        reader.readAsDataURL(f);
+      }
+    });
+    $('adRemoveImageBtn').addEventListener('click', function(){
+      adImageRemoved = true;
+      $('ad_image_file').value = '';
+      $('ad_image_preview').style.display = 'none';
+      $('ad_image_current').textContent = 'Image will be removed on save.';
+      this.style.display = 'none';
+    });
     $('ebSaveBtn').addEventListener('click', saveEbook);
     $('eb_image_file').addEventListener('change', function(){
       var f = this.files[0];
