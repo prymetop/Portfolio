@@ -1,13 +1,66 @@
 {
   "enabled": true,
   "speed": 26,
-  "image": "",
-  "items": [
-    "Technical Writing",
-    "AI-Assisted Development",
-    "Design",
-    "Web3",
-    "Technical Writing E-Book, coming soon",
-    "Open for opportunities"
+  "ads": [
+    {
+      "id": "tech-writing",
+      "published": true,
+      "order": 1,
+      "title": "Technical Writing",
+      "image": "",
+      "price": "",
+      "link": "",
+      "imageOnly": false
+    },
+    {
+      "id": "ai-dev",
+      "published": true,
+      "order": 2,
+      "title": "AI-Assisted Development",
+      "image": "",
+      "price": "",
+      "link": "",
+      "imageOnly": false
+    },
+    {
+      "id": "design",
+      "published": true,
+      "order": 3,
+      "title": "Design",
+      "image": "",
+      "price": "",
+      "link": "",
+      "imageOnly": false
+    },
+    {
+      "id": "web3",
+      "published": true,
+      "order": 4,
+      "title": "Web3",
+      "image": "",
+      "price": "",
+      "link": "",
+      "imageOnly": false
+    },
+    {
+      "id": "ebook-teaser",
+      "published": true,
+      "order": 5,
+      "title": "Technical Writing E-Book, coming soon",
+      "image": "",
+      "price": "",
+      "link": "",
+      "imageOnly": false
+    },
+    {
+      "id": "open-for-work",
+      "published": true,
+      "order": 6,
+      "title": "Open for opportunities",
+      "image": "",
+      "price": "",
+      "link": "",
+      "imageOnly": false
+    }
   ]
 }

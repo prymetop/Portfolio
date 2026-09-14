@@ -155,35 +155,77 @@
       <div id="cardGrid" class="card-grid"></div>
     </div>
 
-    <div id="adsEditorView" style="display:none;">
-      <h2 class="editor-title">Ads (Promo Ticker)</h2>
-      <p class="editor-sub">This is the scrolling promo banner near the bottom of the site. It's a single record, same as E-Book.</p>
+    <div id="adsDashboardView" style="display:none;">
+      <div class="section-heading">
+        <h2>Ads (Promo Ticker)</h2>
+      </div>
+      <p class="editor-sub">These are the individual items that scroll in the promo banner near the bottom of the site. Each one is its own record now, so you can edit them individually.</p>
+
+      <fieldset style="margin-top:0;">
+        <legend>Ticker Settings</legend>
+        <div class="form-grid">
+          <div class="full checkbox-row">
+            <input type="checkbox" id="ad_enabled" checked />
+            <label for="ad_enabled">Enabled (ticker visible on live site)</label>
+          </div>
+          <div>
+            <label>Scroll Speed (seconds per loop, lower = faster)</label>
+            <input type="number" id="ad_speed" value="26" min="8" max="90" />
+          </div>
+        </div>
+        <div class="form-actions" style="margin-top:16px; padding-top:0; border-top:none;">
+          <button class="btn" id="adSettingsSaveBtn">Save Settings</button>
+        </div>
+      </fieldset>
+
+      <div class="section-heading">
+        <h2>All Ads</h2>
+        <button class="btn btn-primary" id="adAddBtn">+ Add New Ad</button>
+      </div>
+      <div id="adCardGrid" class="card-grid"></div>
+    </div>
+
+    <div id="adEditorView" style="display:none;">
+      <h2 class="editor-title" id="adEditorTitle">Add Ad</h2>
       <div class="form-grid">
-        <div class="full checkbox-row">
-          <input type="checkbox" id="ad_enabled" checked />
-          <label for="ad_enabled">Enabled (visible on live site)</label>
+        <div class="full">
+          <label>Title (shown in the ticker unless "Image Only" is checked below; always used as the admin label)</label>
+          <input type="text" id="ad_title" placeholder="e.g. Technical Writing" />
         </div>
         <div>
-          <label>Scroll Speed (seconds per loop, lower = faster)</label>
-          <input type="number" id="ad_speed" value="26" min="8" max="90" />
+          <label>Order (lower shows first)</label>
+          <input type="number" id="ad_order" value="1" />
+        </div>
+        <div class="full checkbox-row">
+          <input type="checkbox" id="ad_published" checked />
+          <label for="ad_published">Published (visible on live site)</label>
         </div>
         <div class="full">
-          <label>Ticker Items (one per line)</label>
-          <textarea id="ad_items" class="tall" placeholder="One phrase per line"></textarea>
-        </div>
-        <div class="full">
-          <label>Small Logo/Icon (optional)</label>
+          <label>Image (optional, shown small inline in the ticker)</label>
           <input type="file" id="ad_image_file" accept="image/*" />
           <div class="hint" id="ad_image_current"></div>
           <img id="ad_image_preview" class="img-preview" style="max-height:32px; width:auto; max-width:120px;" />
           <div style="margin-top:8px;">
             <button type="button" class="btn btn-danger" id="adRemoveImageBtn" style="display:none; font-size:0.78rem; padding:6px 12px;">Remove Image</button>
           </div>
-          <div class="hint">Shown small, inline with the text. It won't change the ticker's size on the live site.</div>
+        </div>
+        <div class="full checkbox-row">
+          <input type="checkbox" id="ad_imageOnly" />
+          <label for="ad_imageOnly">Image Only (hides the title text, shows just a 300×60px banner image, clickable to the Product Link)</label>
+        </div>
+        <div>
+          <label>Price (optional, for future product page)</label>
+          <input type="text" id="ad_price" placeholder="e.g. $9.99" />
+        </div>
+        <div>
+          <label>Product Link (optional, for future product page)</label>
+          <input type="text" id="ad_link" placeholder="e.g. /products/ebook" />
         </div>
       </div>
       <div class="form-actions">
         <button class="btn btn-primary" id="adSaveBtn">Save &amp; Publish</button>
+        <button class="btn" id="adCancelBtn">Cancel</button>
+        <button class="btn btn-danger" id="adDeleteBtn" style="margin-left:auto; display:none;">Delete Ad</button>
       </div>
     </div>
 
@@ -723,7 +765,8 @@
     $('csDashboardView').style.display = 'none';
     $('csEditorView').style.display = 'none';
     $('ebookEditorView').style.display = 'none';
-    $('adsEditorView').style.display = 'none';
+    $('adsDashboardView').style.display = 'none';
+    $('adEditorView').style.display = 'none';
     $('editorView').style.display = 'none';
   }
   function showComingSoonTab(){
@@ -735,7 +778,8 @@
     $('editorView').style.display = 'none';
     $('csEditorView').style.display = 'none';
     $('ebookEditorView').style.display = 'none';
-    $('adsEditorView').style.display = 'none';
+    $('adsDashboardView').style.display = 'none';
+    $('adEditorView').style.display = 'none';
     $('csDashboardView').style.display = 'block';
   }
 
@@ -751,7 +795,8 @@
     $('csDashboardView').style.display = 'none';
     $('csEditorView').style.display = 'none';
     $('ebookEditorView').style.display = 'none';
-    $('adsEditorView').style.display = 'block';
+    $('adEditorView').style.display = 'none';
+    $('adsDashboardView').style.display = 'block';
   }
 
   function showEbookTab(){
@@ -763,7 +808,8 @@
     $('editorView').style.display = 'none';
     $('csDashboardView').style.display = 'none';
     $('csEditorView').style.display = 'none';
-    $('adsEditorView').style.display = 'none';
+    $('adsDashboardView').style.display = 'none';
+    $('adEditorView').style.display = 'none';
     $('ebookEditorView').style.display = 'block';
 
     var eb = csState.items.find(function(x){ return x.id === 'ebook'; });
@@ -780,39 +826,108 @@
     $('ebRemoveImageBtn').style.display = (eb && eb.image) ? 'inline-block' : 'none';
   }
 
-  // ==== Ads (promo ticker) ====
+  // ==== Ads (promo ticker, list of individual ads) ====
   var ADS_FILE_PATH = "ads.json";
-  var adsState = { data: null, sha: null };
-
+  var adsState = { enabled: true, speed: 26, ads: [], sha: null, editingId: null };
   var adImageRemoved = false;
 
   function adsLoad(){
     return ghGetFile(ADS_FILE_PATH).then(function(res){
-      adsState.data = JSON.parse(b64DecodeUnicode(res.content.replace(/\n/g, '')));
+      var data = JSON.parse(b64DecodeUnicode(res.content.replace(/\n/g, '')));
+      adsState.enabled = data.enabled !== false;
+      adsState.speed = data.speed || 26;
+      adsState.ads = data.ads || [];
       adsState.sha = res.sha;
     });
   }
-  function adsRenderForm(){
-    var d = adsState.data || { enabled: true, speed: 26, image: '', items: [] };
-    adImageRemoved = false;
-    $('ad_enabled').checked = d.enabled !== false;
-    $('ad_speed').value = d.speed || 26;
-    $('ad_items').value = (d.items || []).join('\n');
-    $('ad_image_file').value = '';
-    $('ad_image_current').textContent = d.image ? 'Current image: ' + d.image : 'No image set yet.';
-    var preview = $('ad_image_preview');
-    if (d.image){ preview.src = '/' + d.image; preview.style.display = 'inline-block'; }
-    else { preview.style.display = 'none'; }
-    $('adRemoveImageBtn').style.display = d.image ? 'inline-block' : 'none';
+  function adsSaveFile(commitMessage){
+    var data = { enabled: adsState.enabled, speed: adsState.speed, ads: adsState.ads };
+    return ghPutFile(ADS_FILE_PATH, b64EncodeUnicode(JSON.stringify(data, null, 2)), commitMessage, adsState.sha)
+      .then(function(res){ adsState.sha = res.content.sha; });
   }
+
+  function adsRenderDashboard(){
+    $('adsDashboardView').style.display = 'block';
+    $('adEditorView').style.display = 'none';
+    $('ad_enabled').checked = adsState.enabled;
+    $('ad_speed').value = adsState.speed;
+
+    var grid = $('adCardGrid');
+    if (adsState.ads.length === 0){
+      grid.innerHTML = '<p class="empty-note">No ads yet. Click "Add New Ad" to create one.</p>';
+      return;
+    }
+    var sorted = adsState.ads.slice().sort(function(a,b){ return (a.order||0)-(b.order||0); });
+    grid.innerHTML = sorted.map(function(a){
+      var img = a.image ? '<img src="/' + a.image + '" onerror="this.style.display=\'none\'" />' : '<div class="noimg"></div>';
+      var hidden = a.published === false ? ' · <span class="hidden-tag">HIDDEN</span>' : '';
+      var price = a.price ? ' · ' + a.price : '';
+      return '<div class="p-card">' + img +
+        '<div class="info"><h3>' + escapeHtml(a.title || 'Untitled') + '</h3>' +
+        '<div class="meta">Ad' + price + hidden + '</div></div>' +
+        '<div class="actions"><button class="btn" data-ad-edit="' + a.id + '">Edit</button></div></div>';
+    }).join('');
+    grid.querySelectorAll('[data-ad-edit]').forEach(function(btn){
+      btn.addEventListener('click', function(){ adOpenEditor(btn.getAttribute('data-ad-edit')); });
+    });
+  }
+
+  function saveAdSettings(){
+    adsState.enabled = $('ad_enabled').checked;
+    adsState.speed = parseInt($('ad_speed').value, 10) || 26;
+    $('adSettingsSaveBtn').disabled = true;
+    $('adSettingsSaveBtn').textContent = 'Saving…';
+    adsSaveFile('Update ticker settings').then(function(){
+      toast('Settings saved and published.');
+    }).catch(function(err){
+      toast('Error: ' + err.message, true);
+    }).finally(function(){
+      $('adSettingsSaveBtn').disabled = false;
+      $('adSettingsSaveBtn').textContent = 'Save Settings';
+    });
+  }
+
+  function adOpenEditor(id){
+    adsState.editingId = id || null;
+    var a = id ? adsState.ads.find(function(x){ return x.id === id; }) : null;
+    $('adEditorTitle').textContent = a ? 'Edit Ad' : 'Add Ad';
+    $('adDeleteBtn').style.display = a ? 'inline-block' : 'none';
+    adImageRemoved = false;
+
+    $('ad_title').value = a ? a.title || '' : '';
+    $('ad_order').value = a ? (a.order || 1) : (adsState.ads.length + 1);
+    $('ad_published').checked = a ? a.published !== false : true;
+    $('ad_price').value = a ? a.price || '' : '';
+    $('ad_link').value = a ? a.link || '' : '';
+    $('ad_imageOnly').checked = a ? !!a.imageOnly : false;
+    $('ad_image_file').value = '';
+    $('ad_image_current').textContent = a && a.image ? 'Current image: ' + a.image : 'No image set yet.';
+    var preview = $('ad_image_preview');
+    if (a && a.image){ preview.src = '/' + a.image; preview.style.display = 'inline-block'; }
+    else { preview.style.display = 'none'; }
+    $('adRemoveImageBtn').style.display = (a && a.image) ? 'inline-block' : 'none';
+
+    $('adsDashboardView').style.display = 'none';
+    $('adEditorView').style.display = 'block';
+    window.scrollTo(0,0);
+  }
+
   function saveAds(){
-    var existing = adsState.data || {};
-    var data = {
-      enabled: $('ad_enabled').checked,
-      speed: parseInt($('ad_speed').value, 10) || 26,
-      image: adImageRemoved ? '' : (existing.image || ''),
-      items: $('ad_items').value.split('\n').map(function(s){ return s.trim(); }).filter(Boolean)
+    var id = adsState.editingId || slugify($('ad_title').value) + '-' + Date.now().toString(36);
+    var existing = adsState.editingId ? adsState.ads.find(function(x){ return x.id === id; }) : null;
+
+    var ad = {
+      id: id,
+      published: $('ad_published').checked,
+      order: parseInt($('ad_order').value, 10) || 1,
+      title: $('ad_title').value.trim(),
+      price: $('ad_price').value.trim(),
+      link: $('ad_link').value.trim(),
+      imageOnly: $('ad_imageOnly').checked,
+      image: existing ? (adImageRemoved ? '' : (existing.image || '')) : ''
     };
+    if (!ad.title){ toast('Title is required.', true); return; }
+
     $('adSaveBtn').disabled = true;
     $('adSaveBtn').textContent = 'Saving…';
 
@@ -820,23 +935,36 @@
     var imageStep = imageFile
       ? readFileAsBase64(imageFile).then(function(b64){
           var ext = imageFile.name.split('.').pop();
-          var path = 'assets/projects/ads-logo-' + Date.now() + '.' + ext;
-          return ghPutFile(path, b64, 'Upload ads/promo ticker image').then(function(){ data.image = path; });
+          var path = 'assets/projects/ad-' + ad.id + '-' + Date.now() + '.' + ext;
+          return ghPutFile(path, b64, 'Upload image for ad: ' + ad.title).then(function(){ ad.image = path; });
         })
       : Promise.resolve();
 
     imageStep.then(function(){
-      return ghPutFile(ADS_FILE_PATH, b64EncodeUnicode(JSON.stringify(data, null, 2)), 'Update ads/promo ticker', adsState.sha);
-    }).then(function(res){
-        adsState.sha = res.content.sha;
-        adsState.data = data;
-        toast('Saved and published. Live in about a minute.');
-      }).catch(function(err){
-        toast('Error: ' + err.message, true);
-      }).finally(function(){
-        $('adSaveBtn').disabled = false;
-        $('adSaveBtn').textContent = 'Save & Publish';
-      });
+      var idx = adsState.ads.findIndex(function(x){ return x.id === id; });
+      if (idx > -1) adsState.ads[idx] = ad; else adsState.ads.push(ad);
+      return adsSaveFile((adsState.editingId ? 'Update' : 'Add') + ' ad: ' + ad.title);
+    }).then(function(){
+      toast('Saved and published. Live in about a minute.');
+      adsState.editingId = null;
+      adsRenderDashboard();
+    }).catch(function(err){
+      toast('Error: ' + err.message, true);
+    }).finally(function(){
+      $('adSaveBtn').disabled = false;
+      $('adSaveBtn').textContent = 'Save & Publish';
+    });
+  }
+
+  function deleteAd(){
+    if (!adsState.editingId) return;
+    if (!confirm('Delete this ad? This cannot be undone.')) return;
+    adsState.ads = adsState.ads.filter(function(x){ return x.id !== adsState.editingId; });
+    adsSaveFile('Delete ad: ' + adsState.editingId).then(function(){
+      toast('Ad deleted and published.');
+      adsState.editingId = null;
+      adsRenderDashboard();
+    }).catch(function(err){ toast('Error: ' + err.message, true); });
   }
 
   function saveEbook(){
@@ -928,11 +1056,15 @@
     $('tabAds').addEventListener('click', function(){
       showAdsTab();
       if (adsState.sha === null){
-        adsLoad().then(adsRenderForm).catch(function(err){ toast('Could not load ads data: ' + err.message, true); });
+        adsLoad().then(adsRenderDashboard).catch(function(err){ toast('Could not load ads data: ' + err.message, true); });
       } else {
-        adsRenderForm();
+        adsRenderDashboard();
       }
     });
+    $('adSettingsSaveBtn').addEventListener('click', saveAdSettings);
+    $('adAddBtn').addEventListener('click', function(){ adOpenEditor(null); });
+    $('adCancelBtn').addEventListener('click', adsRenderDashboard);
+    $('adDeleteBtn').addEventListener('click', deleteAd);
     $('adSaveBtn').addEventListener('click', saveAds);
     $('ad_image_file').addEventListener('change', function(){
       var f = this.files[0];
