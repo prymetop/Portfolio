@@ -7,10 +7,10 @@
       "published": true,
       "order": 1,
       "title": "Technical Writing",
-      "image": "",
-      "price": "",
+      "price": "43",
       "link": "",
-      "imageOnly": false
+      "imageOnly": true,
+      "image": "assets/projects/ad-tech-writing-1789476310529.jpg"
     },
     {
       "id": "ai-dev",
